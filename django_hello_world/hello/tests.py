@@ -26,7 +26,7 @@ class HttpTest(TestCase):
             first_name='Olexandr',
             last_name='Poplavskyi',
             email=u'stu.shurik@gmail.com',
-        ).save()
+        )
 
         UserProfile.objects.create(
             user=User.objects.get(email='stu.shurik@gmail.com'),
@@ -36,7 +36,7 @@ class HttpTest(TestCase):
             jabber='stushurik@khavr.com',
             skype='shurik.poplavskyi',
             other='-'
-        ).save()
+        )
 
     def test_home(self):
         admin = User.objects.get(email='stu.shurik@gmail.com')
@@ -56,7 +56,7 @@ class HttpTest(TestCase):
 
         self.assertContains(response, 'Date of birth')
         self.assertContains(response, profile.birthday)
-        self.assertEqual("1992-06-19", profile.birthday)
+        self.assertEqual("1992-06-19", str(profile.birthday))
 
         self.assertContains(response, 'Bio')
         self.assertContains(response, profile.bio)

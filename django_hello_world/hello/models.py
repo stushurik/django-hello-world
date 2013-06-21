@@ -6,9 +6,12 @@ from django.db import models
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    birthdate = models.DateField(default=now())
+    birthday = models.DateField(default=now())
     bio = models.TextField(blank=True)
     contacts = models.CharField(blank=True, max_length=255)
+    jabber = models.TextField(blank=True)
+    skype = models.TextField(blank=True)
+    other = models.TextField(blank=True)
 
     def __unicode__(self):
         return self.user.email
