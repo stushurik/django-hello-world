@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Hello! This is a Django Hello World Project.</h3>
-
-<p>You can now go to <a href="{% url admin:index %}">admin interface</a> and change admin pasword</p>
-<p>Currently next users are registered: {% for user in users %}{{ user.username }} {% endfor %}</p>
+<table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Last name</th>
+            <th>Date of birth</th>
+            <th>Bio</th>
+            <th>Email</th>
+            <th>Contacts</th>
+            <th>Jabber</th>
+            <th>Skype</th>
+            <th>Other contacts</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+            {% for item in data %}
+                {% if forloop.counter == 3 %}
+                    <td>{{ item|date:"Y-m-d" }}</td>
+                {% else %}
+                    <td> {{ item }} </td>
+                {% endif %}
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
 {% endblock content %}
