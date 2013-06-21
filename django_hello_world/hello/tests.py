@@ -22,45 +22,34 @@ class SimpleTest(TestCase):
 
 class HttpTest(TestCase):
     def test_home(self):
-        admin = User.objects.get(id=1)
-        profile = UserProfile.objects.get(user=admin)
 
         c = Client()
         response = c.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, 'Name')
-        self.assertContains(response, admin.first_name)
-        self.assertEqual("Olexandr", admin.first_name)
+        self.assertContains(response,"Olexandr")
 
         self.assertContains(response, 'Last name')
-        self.assertContains(response, admin.last_name)
-        self.assertEqual("Poplavskyi", admin.last_name)
+        self.assertContains(response,"Poplavskyi")
 
         self.assertContains(response, 'Date of birth')
-        self.assertContains(response, profile.birthday)
-        self.assertEqual("19.06.92", profile.birthday)
+        self.assertContains(response,"19.06.92")
 
         self.assertContains(response, 'Bio')
-        self.assertContains(response, profile.bio)
-        self.assertEqual("student of the CSTU", profile.bio)
+        self.assertContains(response,"student of the CSTU")
 
         self.assertContains(response, 'Email')
-        self.assertContains(response, admin.email)
-        self.assertEqual("stu.shurik@gmail.com", admin.email)
+        self.assertContains(response,"stu.shurik@gmail.com")
 
         self.assertContains(response, 'Contacts')
-        self.assertContains(response, profile.contacts)
-        self.assertEqual("Chernigiv, Dotsenko str. 12 app. 17", profile.contacts)
+        self.assertContains(response,"Chernigiv, Dotsenko str. 12 app. 17")
 
         self.assertContains(response, 'Jabber')
-        self.assertContains(response, profile.jabber)
-        self.assertEqual("stushurik@khavr.com", profile.jabber)
+        self.assertContains(response, "stushurik@khavr.com")
 
         self.assertContains(response, 'Skype')
-        self.assertContains(response, profile.skype)
-        self.assertEqual("shurik.poplavskyi", profile.skype)
+        self.assertContains(response,"shurik.poplavskyi")
 
         self.assertContains(response, 'Other contacts')
-        self.assertContains(response, profile.other)
-        self.assertEqual("-", profile.other)
+        self.assertContains(response,"-")
