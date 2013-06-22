@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
+from django_hello_world.hello.models import WebRequest
 
 
 class IndexView(TemplateView):
@@ -22,3 +23,7 @@ class IndexView(TemplateView):
         except User.DoesNotExist:
             pass
         return context
+
+class ListRequestView(ListView):
+    model = WebRequest
+    template_name = 'hello/requests.html'
