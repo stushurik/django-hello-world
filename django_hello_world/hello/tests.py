@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
-from django_hello_world.hello.models import UserProfile
+from django_hello_world.hello.models import UserProfile, WebRequest
 
 
 class SimpleTest(TestCase):
@@ -81,3 +81,18 @@ class HttpTest(TestCase):
         self.assertContains(response, 'Other contacts')
         self.assertContains(response, profile.other)
         self.assertEqual("-", profile.other)
+
+
+class WebRequestMiddlewareTest(TestCase):
+
+    def test_requests(self):
+        c = Client()
+        c.get(reverse('home'),
+              PATH=reverse('home'),
+              HTTP_USER_AGENT='Mozilla/5.0'
+              )
+        request = WebRequest.objects.filter(path=reverse('home'),
+                                         user_agent='Mozilla/5.0',
+                                         method='GET'
+        )
+        self.assertEqual(len(request),1)
