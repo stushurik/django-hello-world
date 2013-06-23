@@ -161,3 +161,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
                                'django.contrib.messages.context_processors.messages',
                                'django_hello_world.hello.context_processor.get_django_settings'
 )
+
+FIXTURE_DIRS = (
+   os.path.join(PROJECT_PATH, 'hello/fixtures'),
+)
