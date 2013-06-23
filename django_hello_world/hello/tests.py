@@ -4,6 +4,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from django.core.urlresolvers import reverse
@@ -21,23 +22,6 @@ class SimpleTest(TestCase):
 
 
 class HttpTest(TestCase):
-    def setUp(self):
-        User.objects.create(
-            first_name='Olexandr',
-            last_name='Poplavskyi',
-            email=u'stu.shurik@gmail.com',
-        )
-
-        UserProfile.objects.create(
-            user=User.objects.get(email='stu.shurik@gmail.com'),
-            birthday='1992-06-19',
-            bio='student of the CSTU',
-            contacts='Chernigiv, Dotsenko str. 12 app. 17',
-            jabber='stushurik@khavr.com',
-            skype='shurik.poplavskyi',
-            other='-'
-        )
-
     def test_home(self):
         admin = User.objects.get(email='stu.shurik@gmail.com')
         profile = UserProfile.objects.get(user=admin)
@@ -60,7 +44,7 @@ class HttpTest(TestCase):
 
         self.assertContains(response, 'Bio')
         self.assertContains(response, profile.bio)
-        self.assertEqual("student of the CSTU", profile.bio)
+        self.assertEqual('student of the CSTU', profile.bio)
 
         self.assertContains(response, 'Email')
         self.assertContains(response, admin.email)
@@ -92,7 +76,15 @@ class WebRequestMiddlewareTest(TestCase):
               HTTP_USER_AGENT='Mozilla/5.0'
               )
         request = WebRequest.objects.filter(path=reverse('home'),
-                                         user_agent='Mozilla/5.0',
-                                         method='GET'
-        )
-        self.assertEqual(len(request),1)
+                                            user_agent='Mozilla/5.0',
+                                            method='GET'
+                                            )
+        self.assertEqual(len(request), 1)
+
+
+class PollsViewsTestCase(TestCase):
+    def test_index(self):
+        c = Client()
+        response = c.get(reverse('home'))
+        self.assertTrue('settings' in response.context)
+        self.assertEqual(response.context['settings'],settings)
