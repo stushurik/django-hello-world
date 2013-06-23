@@ -4,6 +4,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from django.core.urlresolvers import reverse
@@ -92,7 +93,15 @@ class WebRequestMiddlewareTest(TestCase):
               HTTP_USER_AGENT='Mozilla/5.0'
               )
         request = WebRequest.objects.filter(path=reverse('home'),
-                                         user_agent='Mozilla/5.0',
-                                         method='GET'
-        )
-        self.assertEqual(len(request),1)
+                                            user_agent='Mozilla/5.0',
+                                            method='GET'
+                                            )
+        self.assertEqual(len(request), 1)
+
+
+class PollsViewsTestCase(TestCase):
+    def test_index(self):
+        c = Client()
+        response = c.get(reverse('home'))
+        self.assertTrue('settings' in response.context)
+        self.assertEqual(response.context['settings'],settings)
