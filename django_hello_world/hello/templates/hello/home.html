@@ -1,32 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{#<table>#}
-{#        <thead>#}
-{#        <tr>#}
-{#            <th>Name</th>#}
-{#            <th>Last name</th>#}
-{#            <th>Date of birth</th>#}
-{#            <th>Bio</th>#}
-{#            <th>Email</th>#}
-{#            <th>Contacts</th>#}
-{#            <th>Jabber</th>#}
-{#            <th>Skype</th>#}
-{#            <th>Other contacts</th>#}
-{#        </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#            <tr>#}
-{#            {% for item in data %}#}
-{#                {% if forloop.counter == 3 %}#}
-{#                    <td>{{ item|date:"Y-m-d" }}</td>#}
-{#                {% else %}#}
-{#                    <td> {{ item }} </td>#}
-{#                {% endif %}#}
-{#            {% endfor %}#}
-{#            </tr>#}
-{#        </tbody>#}
-{#    </table>#}
     <table>
         <tr>
             <td>Name:{{ first_name }}</td>
@@ -41,15 +15,16 @@
             <td>Jabber:{{ jabber }}</td>
         </tr>
         <tr>
-            <td>Photo:</td>
+            <td rowspan="3">Photo:<br>
+                <img src="{% if profile.avatar %}{{ profile.avatar.path }}{% else %}/static/img/default.png{% endif %}"
+                width="60px" height="60px" class="img-polaroid">
+            </td>
             <td>Skype:{{ skype }}</td>
         </tr>
         <tr>
-            <td></td>
             <td>Other contacts:{{ other}}</td>
         </tr>
         <tr>
-            <td></td>
             <td>Bio:{{ bio }}</td>
         </tr>
     </table>
