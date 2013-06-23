@@ -21,8 +21,8 @@
         "pk": 1, 
         "model": "hello.userprofile", 
         "fields": {
-            "bio": "student of CSTU", 
-            "contacts": "Chernigiv, Dotsenko str. 12 app. 17 ", 
+            "bio": "student of the CSTU",
+            "contacts": "Chernigiv, Dotsenko str. 12 app. 17",
             "birthday": "1992-06-19", 
             "user": 1, 
             "skype": "shurik.poplavskyi", 
