@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from django_hello_world.hello.models import UserProfile, WebRequest
 
 
@@ -26,8 +25,7 @@ class HttpTest(TestCase):
         admin = User.objects.get(email='stu.shurik@gmail.com')
         profile = UserProfile.objects.get(user=admin)
 
-        c = Client()
-        response = c.get(reverse('home'))
+        response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, 'Name')
@@ -66,12 +64,30 @@ class HttpTest(TestCase):
         self.assertContains(response, profile.other)
         self.assertEqual("-", profile.other)
 
+    def test_requests(self):
+        response = self.client.get(reverse('requests'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_login(self):
+        response = self.client.post(reverse('profile'),{'username':"admin", 'pass':"2"})
+        self.assertRedirects(response,reverse('login'))
+        response = self.client.post(reverse('profile'),{'username':"admin", 'pass':"1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response,"Olexandr")
+        self.assertContains(response,"Poplavskyi")
+        self.assertContains(response,"1992-06-19")
+        self.assertContains(response,"stu.shurik@gmail.com")
+        self.assertContains(response,"Chernigiv, Dotsenko str. 12 app. 17")
+        self.assertContains(response,"student of the CSTUr")
+        self.assertContains(response,"stushurik@khavr.com")
+        self.assertContains(response,"stushurik@khavr.com")
+        self.assertContains(response,"-")
+
 
 class WebRequestMiddlewareTest(TestCase):
 
     def test_requests(self):
-        c = Client()
-        c.get(reverse('home'),
+        self.client.get(reverse('home'),
               PATH=reverse('home'),
               HTTP_USER_AGENT='Mozilla/5.0'
               )
@@ -82,9 +98,8 @@ class WebRequestMiddlewareTest(TestCase):
         self.assertEqual(len(request), 1)
 
 
-class PollsViewsTestCase(TestCase):
+class ContextProcessorTestCase(TestCase):
     def test_index(self):
-        c = Client()
-        response = c.get(reverse('home'))
+        response = self.client.get(reverse('home'))
         self.assertTrue('settings' in response.context)
         self.assertEqual(response.context['settings'],settings)
