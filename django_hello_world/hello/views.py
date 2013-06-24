@@ -13,18 +13,21 @@ from django_hello_world.hello.models import WebRequest, UserProfile
 class IndexView(FormView):
     template_name = 'hello/profile.html'
     form_class = ContactForm
-    user = User.objects.get(email=u"stu.shurik@gmail.com")
-    user_data = {'first_name': user.first_name,
-                 'last_name': user.last_name,
-                 'email': user.email,
-                 'birthday': user.userprofile.birthday if user.userprofile else None,
-                 'bio': user.userprofile.bio if user.userprofile else None,
-                 'other': user.userprofile.other if user.userprofile else None,
-                 'skype': user.userprofile.skype if user.userprofile else None,
-                 'jabber': user.userprofile.jabber if user.userprofile else None,
-                 'contacts': user.userprofile.contacts if user.userprofile else None,
-                 }
+    user_data = {}
 
+    def get(self, request, *args, **kwargs):
+        self.user = User.objects.get(email=u"stu.shurik@gmail.com")
+        self.user_data.update({'first_name': self.user.first_name,
+                 'last_name': self.user.last_name,
+                 'email': self.user.email,
+                 'birthday': self.user.userprofile.birthday if self.user.userprofile else None,
+                 'bio': self.user.userprofile.bio if self.user.userprofile else None,
+                 'other': self.user.userprofile.other if self.user.userprofile else None,
+                 'skype': self.user.userprofile.skype if self.user.userprofile else None,
+                 'jabber': self.user.userprofile.jabber if self.user.userprofile else None,
+                 'contacts': self.user.userprofile.contacts if self.user.userprofile else None,
+                 })
+        return super(IndexView, self).get(request, *args, **kwargs)
     def get_form(self, form_class):
         return form_class(self.user_data)
 
@@ -117,12 +120,17 @@ class DeleteFile(View):
 class SaveProfile(View):
     def post(self, request, *args, **kwargs):
         try:
+            print request.POST
             request.user.first_name = request.POST['first_name']
             request.user.last_name = request.POST['last_name']
             request.user.save()
-            request.user.userprofile.birthdate = request.POST['birth']
+            request.user.userprofile.birthday = request.POST['birth']
             request.user.userprofile.bio = request.POST['bio']
             request.user.userprofile.contacts = request.POST['contacts']
+            request.user.userprofile.skype = request.POST['skype']
+            request.user.userprofile.jabber = request.POST['jabber']
+            request.user.userprofile.other = request.POST['other']
+            request.user.userprofile.email = request.POST['email']
             request.user.userprofile.save()
         except:
             return HttpResponse('Error!')
