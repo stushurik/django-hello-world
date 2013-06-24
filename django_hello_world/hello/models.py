@@ -5,6 +5,10 @@ from django.db import models
 # Create your models here.
 
 
+def make_upload_path(instance, filename):
+    return u"img/%s_%s" % (now(), filename)
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     birthday = models.DateField(default=now())
@@ -13,6 +17,7 @@ class UserProfile(models.Model):
     jabber = models.TextField(blank=True)
     skype = models.TextField(blank=True)
     other = models.TextField(blank=True)
+    avatar = models.ImageField(upload_to=make_upload_path, null=True)
 
     def __unicode__(self):
         return self.user.email
