@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block extra %}
+    <script src="/static/js/jquery-1.9.1.min.js"></script>
+    <script src="/static/js/jquery.form.js"></script>
+{% endblock %}
+{% block content %}
+        <form action="/profile/save_profile/" method="POST" >
+
+            {% csrf_token %}
+
+                <table border="1" >
+                    <tr>
+                        <td>Name:<br>
+                            {% if home %}
+                                {{ form.data.first_name }}
+                            {% else %}
+                                {{ form.first_name }}
+                            {% endif %}
+                        </td>
+                        <td>Contacts:<br>
+                            {% if home %}
+                                {{ form.data.contacts }}
+                            {% else %}
+                                {{ form.contacts }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last name:<br>
+                            {% if home %}
+                                {{ form.data.last_name }}
+                            {% else %}
+                                {{ form.last_name }}
+                            {% endif %}
+                        </td>
+                        <td>Email:<br>
+                            {% if home %}
+                                {{ form.data.email }}
+                            {% else %}
+                                {{ form.email }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Date of birth:<br>
+                            {% if home %}
+                                {{ form.data.birthday|date:"Y-m-d" }}
+                            {% else %}
+                                {{ form.birthday|date:"Y-m-d" }}
+                            {% endif %}
+                        </td>
+                        <td>Jabber:<br>
+                            {% if home %}
+                                {{ form.data.jabber }}
+                            {% else %}
+                                {{ form.jabber }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">Photo:<br>
+                            <img src="{% if profile.avatar %}{{ profile.avatar.path }}{% else %}/static/img/default.png{% endif %}"
+                            width="300px" height="1000px" class="img-polaroid">
+                            {% if not home %}
+                                <img src="/static/img/close.png" id="close" width="20px" height="20px"
+                                style="position: relative; top: -25px;">
+                            {% endif %}
+                        </td>
+                        <td>Skype:<br>
+                            {% if home %}
+                                {{ form.data.skype }}
+                            {% else %}
+                                {{ form.skype }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Other contacts:<br>
+                            {% if home %}
+                                {{ form.data.other }}
+                            {% else %}
+                                {{ form.other }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Bio:<br>
+                            {% if home %}
+                                {{ form.data.bio }}
+                            {% else %}
+                                {{ form.bio }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+            <input type="submit" class="btn btn-large btn btn-success">
+
+        </form>
+    <script>
+
+        $('#id_uploaded_file').change(function(){
+            var data = new FormData();
+            $.each($('#id_uploaded_file')[0].files, function(i, file) {
+                    data.append('uploaded_file', file);
+            });
+
+            data.append('csrfmiddlewaretoken','{{ csrf_token }}');
+
+            $.ajax({
+                url: '/profile/upload_file/',
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                success: function(data){
+                    $('.img-polaroid').attr('src',data);
+                }
+            });
+        });
+
+        $('#close').click(function(){
+            $.ajax({
+                type: 'POST',
+                url: '/profile/delete_file/',
+                data:{ csrfmiddlewaretoken: '{{ csrf_token }}'},
+                success: function(data){
+                    $('#id_uploaded_file').val('');
+                    $('.img-polaroid').attr('src',data);
+                }
+            });
+        });
+    </script>
+{% endblock %}

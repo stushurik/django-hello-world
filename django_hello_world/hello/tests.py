@@ -69,28 +69,28 @@ class HttpTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_login(self):
-        response = self.client.post(reverse('profile'),{'username':"admin", 'pass':"2"})
-        self.assertRedirects(response,reverse('login'))
-        response = self.client.post(reverse('profile'),{'username':"admin", 'pass':"1"})
+        response = self.client.post(reverse('profile'), {'username': "admin", 'pass': "2"})
+        self.assertRedirects(response, reverse('login'))
+        response = self.client.post(reverse('profile'), {'username': "admin", 'pass': "1"})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response,"Olexandr")
-        self.assertContains(response,"Poplavskyi")
-        self.assertContains(response,"1992-06-19")
-        self.assertContains(response,"stu.shurik@gmail.com")
-        self.assertContains(response,"Chernigiv, Dotsenko str. 12 app. 17")
-        self.assertContains(response,"student of the CSTUr")
-        self.assertContains(response,"stushurik@khavr.com")
-        self.assertContains(response,"stushurik@khavr.com")
-        self.assertContains(response,"-")
+        self.assertContains(response, "Olexandr")
+        self.assertContains(response, "Poplavskyi")
+        self.assertContains(response, "1992-06-19")
+        self.assertContains(response, "stu.shurik@gmail.com")
+        self.assertContains(response, "Chernigiv, Dotsenko str. 12 app. 17")
+        self.assertContains(response, "student of the CSTUr")
+        self.assertContains(response, "stushurik@khavr.com")
+        self.assertContains(response, "shurik.poplavskyi")
+        self.assertContains(response, "-")
 
 
 class WebRequestMiddlewareTest(TestCase):
 
     def test_requests(self):
         self.client.get(reverse('home'),
-              PATH=reverse('home'),
-              HTTP_USER_AGENT='Mozilla/5.0'
-              )
+                        PATH=reverse('home'),
+                        HTTP_USER_AGENT='Mozilla/5.0'
+                        )
         request = WebRequest.objects.filter(path=reverse('home'),
                                             user_agent='Mozilla/5.0',
                                             method='GET'
@@ -102,4 +102,4 @@ class ContextProcessorTestCase(TestCase):
     def test_index(self):
         response = self.client.get(reverse('home'))
         self.assertTrue('settings' in response.context)
-        self.assertEqual(response.context['settings'],settings)
+        self.assertEqual(response.context['settings'], settings)
