@@ -1,11 +1,13 @@
+import os
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, ListView, FormView
+from django.http import HttpResponseRedirect, HttpResponse
+from django.views.generic import TemplateView, ListView, FormView, View
+from django_hello_world import settings
 
 from django_hello_world.hello.widgets import ContactForm
-from django_hello_world.hello.models import WebRequest
+from django_hello_world.hello.models import WebRequest, UserProfile
 
 
 class IndexView(FormView):
@@ -76,3 +78,52 @@ class UserDataUpdate(FormView):
         context = super(UserDataUpdate, self).get_context_data(**kwargs)
         context['user'] = self.request.user
         return context
+
+
+class UploadFile(View):
+    def post(self, request, *args, **kwargs):
+        if request.FILES:
+            user = UserProfile.objects.get(user=request.user)
+            uploaded_file = request.FILES['uploaded_file']
+            try:
+                os.remove(user.avatar.path)
+            except ValueError:
+                pass
+            path = os.path.join(settings.MEDIA_ROOT, 'img/%s' % uploaded_file)
+            with open(path, 'wb+') as destination:
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+                print destination
+                user.avatar = uploaded_file
+            user.save()
+            os.remove(path)
+            return HttpResponse("%s" % user.avatar.path)
+        else:
+            return HttpResponse("/static/img/default.png")
+
+
+class DeleteFile(View):
+    def post(self, request, *args, **kwargs):
+        user = UserProfile.objects.get(user=request.user)
+        try:
+            os.remove(user.avatar.path)
+            user.avatar.name = ''
+            user.save()
+        except ValueError:
+            pass
+        return HttpResponse("/static/img/default.png")
+
+
+class SaveProfile(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            request.user.first_name = request.POST['first_name']
+            request.user.last_name = request.POST['last_name']
+            request.user.save()
+            request.user.userprofile.birthdate = request.POST['birth']
+            request.user.userprofile.bio = request.POST['bio']
+            request.user.userprofile.contacts = request.POST['contacts']
+            request.user.userprofile.save()
+        except:
+            pass
+        return HttpResponse('Its a trap!')

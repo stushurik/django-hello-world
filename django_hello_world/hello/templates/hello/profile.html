@@ -1,14 +1,21 @@
 {% extends "base.html" %}
+
+{% load extended_tags %}
+
 {% block extra %}
     <script src="/static/js/jquery-1.9.1.min.js"></script>
     <script src="/static/js/jquery.form.js"></script>
 {% endblock %}
+
 {% block content %}
-        <form action="/profile/save_profile/" method="POST" >
+
+        {% get_profile user as profile%}
+        {% if not home %}
+            <form action="/profile/save_profile/" method="POST" id="user_data_form">
 
             {% csrf_token %}
-
-                <table border="1" >
+        {% endif %}
+                <table>
                     <tr>
                         <td>Name:<br>
                             {% if home %}
@@ -58,13 +65,16 @@
                         </td>
                     </tr>
                     <tr>
-                        <td rowspan="3">Photo:<br>
-                            <img src="{% if profile.avatar %}{{ profile.avatar.path }}{% else %}/static/img/default.png{% endif %}"
-                            width="300px" height="1000px" class="img-polaroid">
-                            {% if not home %}
-                                <img src="/static/img/close.png" id="close" width="20px" height="20px"
-                                style="position: relative; top: -25px;">
-                            {% endif %}
+                        <td rowspan="3" id="avatar_cell">
+                            Photo:
+                            <div id="avatar">
+                                <img src="{% if profile.avatar %}{{ profile.avatar.path }}{% else %}/static/img/default.png{% endif %}"
+                                width="300px" height="1000px" class="img-polaroid">
+                                {% if not home %}
+                                    <img src="/static/img/close.png" id="close" width="20px" height="20px" id="close">
+                                    {{ form.uploaded_file }}
+                                {% endif %}
+                            </div>
                         </td>
                         <td>Skype:<br>
                             {% if home %}
@@ -93,43 +103,70 @@
                         </td>
                     </tr>
                 </table>
-
+        {% if not home %}
             <input type="submit" class="btn btn-large btn btn-success">
 
         </form>
-    <script>
 
-        $('#id_uploaded_file').change(function(){
-            var data = new FormData();
-            $.each($('#id_uploaded_file')[0].files, function(i, file) {
-                    data.append('uploaded_file', file);
+        <div id='loader'>
+            Loading... please wait
+            <img src="static/img/spinner.gif"/>
+        </div>
+        <script>
+            $(document).ready(function() {
+                var options = {
+                    beforeSubmit:function () {
+                            $("#loader").css("display", "block");
+                            return true;
+                    },
+                    success:function(responseText)  {
+                            $("#loader").css("display", "none");
+                            $('#user_data_form').find('input, textarea, button').removeAttr('disabled');
+                    }
+                };
+
+                $('#id_uploaded_file').change(function(){
+                    var data = new FormData();
+                    $.each($('#id_uploaded_file')[0].files, function(i, file) {
+                            data.append('uploaded_file', file);
+                    });
+
+                    data.append('csrfmiddlewaretoken','{{ csrf_token }}');
+
+                    $.ajax({
+                        url: '/profile/upload_file/',
+                        data: data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        type: 'POST',
+                        success: function(data){
+                            $('.img-polaroid').attr('src',data);
+                        }
+                    });
+                });
+
+                $('#close').click(function(){
+                    $.ajax({
+                        type: 'POST',
+                        url: '/profile/delete_file/',
+                        data:{ csrfmiddlewaretoken: '{{ csrf_token }}'},
+                        success: function(data){
+                            $('#id_uploaded_file').val('');
+                            $('.img-polaroid').attr('src',data);
+                        }
+                    });
+                });
+
+
+
+                $('#user_data_form').submit(function() {
+                    $(this).ajaxSubmit(options);
+                    $('#user_data_form').find('input, textarea, button').attr('disabled','disabled');
+                    return false;
+                 });
             });
 
-            data.append('csrfmiddlewaretoken','{{ csrf_token }}');
-
-            $.ajax({
-                url: '/profile/upload_file/',
-                data: data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                type: 'POST',
-                success: function(data){
-                    $('.img-polaroid').attr('src',data);
-                }
-            });
-        });
-
-        $('#close').click(function(){
-            $.ajax({
-                type: 'POST',
-                url: '/profile/delete_file/',
-                data:{ csrfmiddlewaretoken: '{{ csrf_token }}'},
-                success: function(data){
-                    $('#id_uploaded_file').val('');
-                    $('.img-polaroid').attr('src',data);
-                }
-            });
-        });
-    </script>
+        </script>
+    {% endif %}
 {% endblock %}
