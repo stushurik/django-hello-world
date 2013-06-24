@@ -1,0 +1,28 @@
+#loader{
+    display: none;
+    position: fixed;
+    left: 500px; bottom: 350px;
+    width: 100%;
+}
+
+#close{
+    position: relative;
+    top: -163px;
+    left: -3px
+}
+
+#avatar{
+    position: relative;
+    /*top: -40px;*/
+}
+
+#avatar_cell{
+    vertical-align: top;
+    width: 335px;
+    height: 450px;
+}
+
+#id_uploaded_file{
+    position: relative;
+    top: 20px;
+}
