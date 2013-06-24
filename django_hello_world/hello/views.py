@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView, ListView, FormView, View
 from django_hello_world import settings
 
-from django_hello_world.hello.widgets import ContactForm
+from django_hello_world.hello.forms import ContactForm
 from django_hello_world.hello.models import WebRequest, UserProfile
 
 
@@ -17,7 +17,7 @@ class IndexView(FormView):
     user_data = {'first_name': user.first_name,
                  'last_name': user.last_name,
                  'email': user.email,
-                 #'datepicker': user.userprofile.birthday if user.userprofile else None,
+                 'birthday': user.userprofile.birthday if user.userprofile else None,
                  'bio': user.userprofile.bio if user.userprofile else None,
                  'other': user.userprofile.other if user.userprofile else None,
                  'skype': user.userprofile.skype if user.userprofile else None,
@@ -59,7 +59,7 @@ class UserDataUpdate(FormView):
             self.user_data.update({'first_name': auth_user.first_name,
                                    'last_name': auth_user.last_name,
                                    'email': auth_user.email,
-                                   #'datepicker': auth_user.userprofile.birthday if auth_user.userprofile else None,
+                                   'birthday': auth_user.userprofile.birthday if auth_user.userprofile else None,
                                    'bio': auth_user.userprofile.bio if auth_user.userprofile else None,
                                    'other': auth_user.userprofile.other if auth_user.userprofile else None,
                                    'skype': auth_user.userprofile.skype if auth_user.userprofile else None,
@@ -125,5 +125,5 @@ class SaveProfile(View):
             request.user.userprofile.contacts = request.POST['contacts']
             request.user.userprofile.save()
         except:
-            pass
-        return HttpResponse('Its a trap!')
+            return HttpResponse('Error!')
+        return HttpResponse('Successful')

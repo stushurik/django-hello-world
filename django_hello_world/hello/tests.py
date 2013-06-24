@@ -78,10 +78,14 @@ class HttpTest(TestCase):
         self.assertContains(response, "1992-06-19")
         self.assertContains(response, "stu.shurik@gmail.com")
         self.assertContains(response, "Chernigiv, Dotsenko str. 12 app. 17")
-        self.assertContains(response, "student of the CSTUr")
+        self.assertContains(response, "student of the CSTU")
         self.assertContains(response, "stushurik@khavr.com")
         self.assertContains(response, "shurik.poplavskyi")
         self.assertContains(response, "-")
+
+    def test_save(self):
+        response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
+        self.assertContains(response, 'Error!')
 
 
 class WebRequestMiddlewareTest(TestCase):

@@ -5,6 +5,7 @@
 {% block extra %}
     <script src="/static/js/jquery-1.9.1.min.js"></script>
     <script src="/static/js/jquery.form.js"></script>
+    {{ form.media }}
 {% endblock %}
 
 {% block content %}
@@ -53,7 +54,7 @@
                             {% if home %}
                                 {{ form.data.birthday|date:"Y-m-d" }}
                             {% else %}
-                                {{ form.birthday|date:"Y-m-d" }}
+                                {{ form.birthday }}
                             {% endif %}
                         </td>
                         <td>Jabber:<br>

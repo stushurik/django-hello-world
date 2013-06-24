@@ -1,13 +1,24 @@
-from django.forms import DateField, CharField, FileField, TextInput, Textarea, Form, EmailField
+from django.utils.safestring import mark_safe
+from django.forms import TextInput
 
+class CalendarWidget(TextInput):
+    class Media:
+        css = {
+            'all': ('/static/css/datepicker.css',)
+        }
+        js = ('/static/js/bootstrap-datepicker.js',
+              '/static/js/datepicker_activation.js',
+        )
 
-class ContactForm(Form):
-    first_name = CharField(max_length=255, label="Name")
-    last_name = CharField(max_length=255, label="Last name")
-    email = EmailField(label="Email")
-    bio = CharField(widget=Textarea, label="Bio")
-    contacts = CharField(max_length=255, label="Contacts")
-    skype = CharField(max_length=255, label="Contacts")
-    jabber = CharField(max_length=255, label="Jabber")
-    other = CharField(widget=Textarea, label="Other")
-    uploaded_file = FileField()
+    def render(self, name, value, attrs=None):
+        return mark_safe(u'<div class=\"input-append date\" '
+                           'id=\"dpYears\" data-date=\"2012-12-02\" '
+                           'data-date-format=\"yyyy-mm-dd\" '
+                           'data-date-viewmode=\"years\">'
+                           '<input type=\"text\" '
+                           'id=\"birth\"  name=\"birth\" value=\"%s\">'
+                           '<span class=\"add-on\"><i class="icon-calendar">'
+                           '</i></span></div>' %
+                           value
+        )
+
