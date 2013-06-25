@@ -9,10 +9,9 @@
 {% endblock %}
 
 {% block content %}
-
         {% get_profile user as profile%}
-        <a href="http://{{ host }}/{% edit_link user %}">{{ host }}/{% edit_link user %}</a><br>
         {% if not home %}
+            <a href="http://{{ host }}/{% edit_link user %}">{{ host }}/{% edit_link user %}</a><br>
             <form action="/profile/save_profile/" method="POST" id="user_data_form">
 
             {% csrf_token %}

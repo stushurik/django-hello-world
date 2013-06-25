@@ -1,5 +1,5 @@
 import os
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -10,33 +10,47 @@ from django_hello_world.hello.forms import ContactForm
 from django_hello_world.hello.models import WebRequest, UserProfile
 
 
-class IndexView(FormView):
+def set_user_data(dct, user):
+    dct.update({'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'birthday': user.userprofile.birthday if user.userprofile else None,
+                'bio': user.userprofile.bio if user.userprofile else None,
+                'other': user.userprofile.other if user.userprofile else None,
+                'skype': user.userprofile.skype if user.userprofile else None,
+                'jabber': user.userprofile.jabber if user.userprofile else None,
+                'contacts': user.userprofile.contacts if user.userprofile else None,
+                }
+               )
+
+
+class DetailFormView(FormView):
     template_name = 'hello/profile.html'
     form_class = ContactForm
     user_data = {}
-    user = None
 
-    def get(self, request, *args, **kwargs):
-        self.user = User.objects.get(email=u"stu.shurik@gmail.com")
-        self.user_data.update({'first_name': self.user.first_name,
-                 'last_name': self.user.last_name,
-                 'email': self.user.email,
-                 'birthday': self.user.userprofile.birthday if self.user.userprofile else None,
-                 'bio': self.user.userprofile.bio if self.user.userprofile else None,
-                 'other': self.user.userprofile.other if self.user.userprofile else None,
-                 'skype': self.user.userprofile.skype if self.user.userprofile else None,
-                 'jabber': self.user.userprofile.jabber if self.user.userprofile else None,
-                 'contacts': self.user.userprofile.contacts if self.user.userprofile else None,
-                 })
-        return super(IndexView, self).get(request, *args, **kwargs)
     def get_form(self, form_class):
         return form_class(self.user_data)
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailFormView, self).get_context_data(**kwargs)
+        context['host'] = self.request.get_host()
+        return context
+
+
+class IndexView(DetailFormView):
+    def get(self, request, *args, **kwargs):
+        try:
+            self.user = User.objects.get(email=u"stu.shurik@gmail.com")
+            set_user_data(self.user_data, self.user)
+        except:
+            pass
+        return super(IndexView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['user'] = self.user
         context['home'] = True
-        context['host'] = self.request.get_host()
         return context
 
 
@@ -49,25 +63,23 @@ class AuthenticationView(TemplateView):
     template_name = 'hello/login.html'
 
 
-class UserDataUpdate(IndexView):
+class UserDataUpdate(DetailFormView):
+
+    def get(self, request, *args, **kwargs):
+        if get_user(request).is_authenticated():
+            set_user_data(self.user_data, get_user(request))
+            return super(UserDataUpdate, self).get(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
+
     def post(self, request, *args, **kwargs):
         username = request.POST['username']
         password = request.POST['pass']
+
         auth_user = authenticate(username=username, password=password)
-        if auth_user is not None:
-            if auth_user.is_active:
-                login(request, auth_user)
-            self.user_data.update({'first_name': auth_user.first_name,
-                                   'last_name': auth_user.last_name,
-                                   'email': auth_user.email,
-                                   'birthday': auth_user.userprofile.birthday if auth_user.userprofile else None,
-                                   'bio': auth_user.userprofile.bio if auth_user.userprofile else None,
-                                   'other': auth_user.userprofile.other if auth_user.userprofile else None,
-                                   'skype': auth_user.userprofile.skype if auth_user.userprofile else None,
-                                   'jabber': auth_user.userprofile.jabber if auth_user.userprofile else None,
-                                   'contacts': auth_user.userprofile.contacts if auth_user.userprofile else None,
-                                   }
-                                  )
+        print auth_user
+        if auth_user is not None and auth_user.is_active:
+            login(request, auth_user)
+            set_user_data(self.user_data, auth_user)
             return super(UserDataUpdate, self).post(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(reverse('login'))
@@ -75,7 +87,6 @@ class UserDataUpdate(IndexView):
     def get_context_data(self, **kwargs):
         context = super(UserDataUpdate, self).get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['home'] = False
         return context
 
 
