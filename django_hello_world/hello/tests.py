@@ -87,6 +87,13 @@ class HttpTest(TestCase):
         response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
         self.assertContains(response, 'Error!')
 
+    def test_admin_page(self):
+        self.client.login(username='admin',password='1')
+        response = self.client.get('/admin/auth/user/1/')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/admin/auth/user/100/')
+        self.assertEqual(response.status_code, 404)
+
 
 class WebRequestMiddlewareTest(TestCase):
 
