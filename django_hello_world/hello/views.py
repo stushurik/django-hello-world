@@ -14,6 +14,7 @@ class IndexView(FormView):
     template_name = 'hello/profile.html'
     form_class = ContactForm
     user_data = {}
+    user = None
 
     def get(self, request, *args, **kwargs):
         self.user = User.objects.get(email=u"stu.shurik@gmail.com")
@@ -35,6 +36,7 @@ class IndexView(FormView):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['user'] = self.user
         context['home'] = True
+        context['host'] = self.request.get_host()
         return context
 
 
@@ -47,11 +49,7 @@ class AuthenticationView(TemplateView):
     template_name = 'hello/login.html'
 
 
-class UserDataUpdate(FormView):
-    template_name = 'hello/profile.html'
-    form_class = ContactForm
-    user_data = {}
-
+class UserDataUpdate(IndexView):
     def post(self, request, *args, **kwargs):
         username = request.POST['username']
         password = request.POST['pass']
@@ -74,12 +72,10 @@ class UserDataUpdate(FormView):
         else:
             return HttpResponseRedirect(reverse('login'))
 
-    def get_form(self, form_class):
-        return form_class(self.user_data)
-
     def get_context_data(self, **kwargs):
         context = super(UserDataUpdate, self).get_context_data(**kwargs)
         context['user'] = self.request.user
+        context['home'] = False
         return context
 
 
@@ -96,7 +92,6 @@ class UploadFile(View):
             with open(path, 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
-                print destination
                 user.avatar = uploaded_file
             user.save()
             os.remove(path)
@@ -120,7 +115,6 @@ class DeleteFile(View):
 class SaveProfile(View):
     def post(self, request, *args, **kwargs):
         try:
-            print request.POST
             request.user.first_name = request.POST['first_name']
             request.user.last_name = request.POST['last_name']
             request.user.save()
