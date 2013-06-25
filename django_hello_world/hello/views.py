@@ -1,3 +1,5 @@
+from django.views.decorators.csrf import csrf_protect
+import json
 import os
 from django.contrib.auth import authenticate, login, get_user
 from django.contrib.auth.models import User
@@ -125,6 +127,9 @@ class DeleteFile(View):
 
 class SaveProfile(View):
     def post(self, request, *args, **kwargs):
+        response_data = {'success': True,
+                         'message': "Data was successful saved!"
+                         }
         try:
             request.user.first_name = request.POST['first_name']
             request.user.last_name = request.POST['last_name']
@@ -138,5 +143,6 @@ class SaveProfile(View):
             request.user.userprofile.email = request.POST['email']
             request.user.userprofile.save()
         except:
-            return HttpResponse('Error!')
-        return HttpResponse('Successful')
+            response_data['success'] = False
+            response_data['message'] = "Error while saving data!"
+        return HttpResponse(json.dumps(response_data),mimetype="application/json")
