@@ -4,6 +4,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import json
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -84,8 +85,11 @@ class HttpTest(TestCase):
         self.assertContains(response, "-")
 
     def test_save(self):
+        response_data = {'success': False,
+                 'message': "Error while saving data!"
+                 }
         response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
-        self.assertContains(response, 'Error!')
+        self.assertContains(response, json.dumps(response_data))
 
     def test_admin_page(self):
         self.client.login(username='admin',password='1')
