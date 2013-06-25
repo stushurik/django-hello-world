@@ -1,4 +1,6 @@
+*.dat
 *.pyc
 *.sqlite3
 .idea/
 .env/
+media/img
