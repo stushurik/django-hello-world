@@ -1,6 +1,6 @@
-*.dat
 *.pyc
 *.sqlite3
 .idea/
 .env/
-django_hello_world/media/img/
+django_hello_world/media/img/*
+!.gitkeep
