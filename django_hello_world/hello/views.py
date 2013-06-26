@@ -24,6 +24,7 @@ class IndexView(TemplateView):
             pass
         return context
 
+
 class ListRequestView(ListView):
     model = WebRequest
     template_name = 'hello/requests.html'

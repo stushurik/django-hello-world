@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth.models import User
+
 from django_hello_world.hello.models import WebRequest
 
 

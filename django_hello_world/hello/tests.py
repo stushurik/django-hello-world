@@ -92,7 +92,7 @@ class WebRequestMiddlewareTest(TestCase):
               HTTP_USER_AGENT='Mozilla/5.0'
               )
         request = WebRequest.objects.filter(path=reverse('home'),
-                                         user_agent='Mozilla/5.0',
-                                         method='GET'
-        )
-        self.assertEqual(len(request),1)
+                                            user_agent='Mozilla/5.0',
+                                            method='GET'
+                                            )
+        self.assertEqual(len(request), 1)

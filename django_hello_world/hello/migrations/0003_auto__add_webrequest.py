@@ -76,7 +76,7 @@ class Migration(SchemaMigration):
         'hello.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'bio': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 6, 22, 0, 0)'}),
+            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 6, 26, 0, 0)'}),
             'contacts': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'jabber': ('django.db.models.fields.TextField', [], {'blank': 'True'}),

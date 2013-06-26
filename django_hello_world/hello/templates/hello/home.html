@@ -1,32 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{#<table>#}
-{#        <thead>#}
-{#        <tr>#}
-{#            <th>Name</th>#}
-{#            <th>Last name</th>#}
-{#            <th>Date of birth</th>#}
-{#            <th>Bio</th>#}
-{#            <th>Email</th>#}
-{#            <th>Contacts</th>#}
-{#            <th>Jabber</th>#}
-{#            <th>Skype</th>#}
-{#            <th>Other contacts</th>#}
-{#        </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#            <tr>#}
-{#            {% for item in data %}#}
-{#                {% if forloop.counter == 3 %}#}
-{#                    <td>{{ item|date:"Y-m-d" }}</td>#}
-{#                {% else %}#}
-{#                    <td> {{ item }} </td>#}
-{#                {% endif %}#}
-{#            {% endfor %}#}
-{#            </tr>#}
-{#        </tbody>#}
-{#    </table>#}
+
     <table>
         <tr>
             <td>Name:{{ first_name }}</td>
