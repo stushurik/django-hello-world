@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django_hello_world.hello.models import UserProfile, WebRequest
+from django_hello_world.hello.models import UserProfile, WebRequest, ModelsOperation
 
 
 class SimpleTest(TestCase):
@@ -119,3 +119,40 @@ class ContextProcessorTestCase(TestCase):
         self.assertTrue('settings' in response.context)
         self.assertEqual(response.context['settings'], settings)
 
+
+class SignalProcessorTestCase(TestCase):
+    def test_signal(self):
+        number_of_operation = len(ModelsOperation.objects.filter(operation='Creation',
+                                                                 model_class='User'
+                                                                 )
+                                  )
+        user = User.objects.create(username='test_signal')
+        self.assertEqual(number_of_operation+1,
+                         len(ModelsOperation.objects.filter(operation='Creation',
+                                                            model_class='User'
+                                                            )
+                             )
+                         )
+        number_of_operation = len(ModelsOperation.objects.filter(operation='Editing',
+                                                                 model_class='User'
+                                                                 )
+                                  )
+        user.username = 'test_signal_edit'
+        user.save()
+        self.assertEqual(number_of_operation+1,
+                 len(ModelsOperation.objects.filter(operation='Editing',
+                                                    model_class='User'
+                                                    )
+                     )
+                 )
+        number_of_operation = len(ModelsOperation.objects.filter(operation='Deletion',
+                                                                 model_class='User'
+                                                                 )
+                                  )
+        user.delete()
+        self.assertEqual(number_of_operation+1,
+                 len(ModelsOperation.objects.filter(operation='Deletion',
+                                                    model_class='User'
+                                                    )
+                     )
+                 )
