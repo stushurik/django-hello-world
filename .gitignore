@@ -3,4 +3,4 @@
 *.sqlite3
 .idea/
 .env/
-media/img
+django_hello_world/media/img/

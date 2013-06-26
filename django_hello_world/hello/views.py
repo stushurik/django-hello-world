@@ -1,4 +1,3 @@
-from django.views.decorators.csrf import csrf_protect
 import json
 import os
 from django.contrib.auth import authenticate, login, get_user
@@ -145,4 +144,4 @@ class SaveProfile(View):
         except:
             response_data['success'] = False
             response_data['message'] = "Error while saving data!"
-        return HttpResponse(json.dumps(response_data),mimetype="application/json")
+        return HttpResponse(json.dumps(response_data), mimetype="application/json")
