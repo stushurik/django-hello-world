@@ -43,3 +43,14 @@ class WebRequest(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.time, self.host)
+
+
+class ModelsOperation(models.Model):
+    time = models.DateTimeField(default=now())
+    OPERATION = (('Creation', 'Creation'),
+                 ('Deletion', 'Deletion'),
+                 ('Editing', 'Editing')
+    )
+    operation = models.CharField(choices=OPERATION, max_length=10)
+    model_class = models.CharField(max_length=2000)
+

@@ -77,7 +77,6 @@ class UserDataUpdate(DetailFormView):
         password = request.POST['pass']
 
         auth_user = authenticate(username=username, password=password)
-        print auth_user
         if auth_user is not None and auth_user.is_active:
             login(request, auth_user)
             set_user_data(self.user_data, auth_user)
