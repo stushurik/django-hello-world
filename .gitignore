@@ -3,4 +3,4 @@
 .idea/
 .env/
 django_hello_world/media/img/
-!*.gitkeep/
+! *.gitkeep
