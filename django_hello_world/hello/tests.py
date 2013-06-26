@@ -65,26 +65,3 @@ class HttpTest(TestCase):
         self.assertContains(response, 'Other contacts')
         self.assertContains(response, profile.other)
         self.assertEqual("-", profile.other)
-
-
-class WebRequestMiddlewareTest(TestCase):
-
-    def test_requests(self):
-        c = Client()
-        c.get(reverse('home'),
-              PATH=reverse('home'),
-              HTTP_USER_AGENT='Mozilla/5.0'
-              )
-        request = WebRequest.objects.filter(path=reverse('home'),
-                                            user_agent='Mozilla/5.0',
-                                            method='GET'
-                                            )
-        self.assertEqual(len(request), 1)
-
-
-class PollsViewsTestCase(TestCase):
-    def test_index(self):
-        c = Client()
-        response = c.get(reverse('home'))
-        self.assertTrue('settings' in response.context)
-        self.assertEqual(response.context['settings'],settings)
