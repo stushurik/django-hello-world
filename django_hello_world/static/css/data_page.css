@@ -26,3 +26,9 @@
     position: relative;
     top: 20px;
 }
+
+#message{
+    position: fixed;
+    left: 500px; bottom: 350px;
+    width: 200px;
+}
