@@ -1,4 +1,4 @@
-from django.forms import DateField, CharField, FileField, TextInput, Textarea, Form, EmailField
+from django.forms import CharField, FileField, Textarea, Form, EmailField
 
 
 class ContactForm(Form):
