@@ -15,6 +15,7 @@
 
         {% get_profile user as profile%}
         {% if not home %}
+            <a href="http://{{ host }}/{% edit_link user %}">{{ host }}/{% edit_link user %}</a><br>
             <form action="/profile/save_profile/" method="POST" id="user_data_form">
 
             {% csrf_token %}
