@@ -6,10 +6,10 @@ Replace this with more appropriate tests for your application.
 """
 from django.conf import settings
 from django.contrib.auth.models import User
-
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django_hello_world.hello.models import UserProfile, WebRequest
+
+from django_hello_world.hello.models import WebRequest
 
 
 class SimpleTest(TestCase):
@@ -21,9 +21,10 @@ class SimpleTest(TestCase):
 
 
 class HttpTest(TestCase):
+    fixtures = ['initial_data.json']
+
     def test_home(self):
         admin = User.objects.get(email='stu.shurik@gmail.com')
-        profile = UserProfile.objects.get(user=admin)
 
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
@@ -37,32 +38,32 @@ class HttpTest(TestCase):
         self.assertEqual("Poplavskyi", admin.last_name)
 
         self.assertContains(response, 'Date of birth')
-        self.assertContains(response, profile.birthday)
-        self.assertEqual("1992-06-19", str(profile.birthday))
+        self.assertContains(response, admin.userprofile.birthday)
+        self.assertEqual("1992-06-19", str(admin.userprofile.birthday))
 
         self.assertContains(response, 'Bio')
-        self.assertContains(response, profile.bio)
-        self.assertEqual('student of the CSTU', profile.bio)
+        self.assertContains(response, admin.userprofile.bio)
+        self.assertEqual('student of the CSTU', admin.userprofile.bio)
 
         self.assertContains(response, 'Email')
         self.assertContains(response, admin.email)
         self.assertEqual("stu.shurik@gmail.com", admin.email)
 
         self.assertContains(response, 'Contacts')
-        self.assertContains(response, profile.contacts)
-        self.assertEqual("Chernigiv, Dotsenko str. 12 app. 17", profile.contacts)
+        self.assertContains(response, admin.userprofile.contacts)
+        self.assertEqual("Chernigiv, Dotsenko str. 12 app. 17", admin.userprofile.contacts)
 
         self.assertContains(response, 'Jabber')
-        self.assertContains(response, profile.jabber)
-        self.assertEqual("stushurik@khavr.com", profile.jabber)
+        self.assertContains(response, admin.userprofile.jabber)
+        self.assertEqual("stushurik@khavr.com", admin.userprofile.jabber)
 
         self.assertContains(response, 'Skype')
-        self.assertContains(response, profile.skype)
-        self.assertEqual("shurik.poplavskyi", profile.skype)
+        self.assertContains(response, admin.userprofile.skype)
+        self.assertEqual("shurik.poplavskyi", admin.userprofile.skype)
 
         self.assertContains(response, 'Other contacts')
-        self.assertContains(response, profile.other)
-        self.assertEqual("-", profile.other)
+        self.assertContains(response, admin.userprofile.other)
+        self.assertEqual("-", admin.userprofile.other)
 
     def test_requests(self):
         response = self.client.get(reverse('requests'))
@@ -85,7 +86,7 @@ class HttpTest(TestCase):
 
     def test_save(self):
         response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
-        self.assertContains(response, 'Error!')
+        self.assertContains(response, 'Error while saving data!')
 
 
 class WebRequestMiddlewareTest(TestCase):
@@ -102,7 +103,7 @@ class WebRequestMiddlewareTest(TestCase):
         self.assertEqual(len(request), 1)
 
 
-class ContextProcessorTestCase(TestCase):
+class ContextTestCase(TestCase):
     def test_index(self):
         response = self.client.get(reverse('home'))
         self.assertTrue('settings' in response.context)
