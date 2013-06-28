@@ -1,15 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-<head><title>{% block title %}No title{% endblock %}</title></head>
+<head>
+    <title>{% block title %}No title{% endblock %}</title>
+    <link href="/static/css/data_page.css" rel="stylesheet" media="screen">
+</head>
 <body>
-    42 Coffee Cups Test Assignment <a href="/login">Login</a>
+    42 Coffee Cups Test Assignment
     <hr>
     {% block body %}
         {% block content %}
         {% endblock content %}
     {% endblock body %}
-    <hr>
-    <a href="/requests">requests</a>
 </body>
 </html>
