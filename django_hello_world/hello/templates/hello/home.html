@@ -1,32 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-
     <table>
         <tr>
-            <td>Name:{{ first_name }}</td>
-            <td>Contacts:{{ contacts }}</td>
+            <td>Name:{{ admin_user.first_name }}</td>
+            <td>Contacts:{{ admin_user.userprofile.contacts }}</td>
         </tr>
         <tr>
-            <td>Last name:{{ last_name }}</td>
-            <td>Email:{{ email }}</td>
+            <td>Last name:{{ admin_user.last_name }}</td>
+            <td>Email:{{ admin_user.email }}</td>
         </tr>
         <tr>
-            <td>Date of birth:{{ birthday|date:"Y-m-d"  }}</td>
-            <td>Jabber:{{ jabber }}</td>
+            <td>Date of birth:{{ admin_user.userprofile.birthday|date:"Y-m-d"  }}</td>
+            <td>Skype:{{ admin_user.userprofile.skype }}<br>
+                Jabber:{{ admin_user.userprofile.jabber }}
+            </td>
         </tr>
         <tr>
-            <td>Photo:</td>
-            <td>Skype:{{ skype }}</td>
+            <td rowspan="2" class="cells">
+                 Bio:<br>
+                <textarea rows="10" cols="39" readonly>{{ admin_user.userprofile.bio }}</textarea>
+            </td>
         </tr>
         <tr>
-            <td></td>
-            <td>Other contacts:{{ other}}</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>Bio:{{ bio }}</td>
+            <td class="cells">Other contacts:<br>
+                <textarea rows="10" cols="39" readonly>{{ admin_user.userprofile.other}}</textarea>
+            </td>
         </tr>
     </table>
-
 {% endblock content %}
