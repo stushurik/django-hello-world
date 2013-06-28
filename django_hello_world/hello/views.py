@@ -50,7 +50,7 @@ class IndexView(DetailFormView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['user'] = self.user
+        context['requested_user'] = self.user
         context['home'] = True
         return context
 
@@ -86,7 +86,7 @@ class UserDataUpdate(DetailFormView):
 
     def get_context_data(self, **kwargs):
         context = super(UserDataUpdate, self).get_context_data(**kwargs)
-        context['user'] = self.request.user
+        context['requested_user'] = self.request.user
         return context
 
 
