@@ -2,3 +2,5 @@
 *.sqlite3
 .idea/
 .env/
+django-hello-world/media/img/
+!*.gitkeep/
