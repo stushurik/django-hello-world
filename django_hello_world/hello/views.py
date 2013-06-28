@@ -15,6 +15,7 @@ def set_user_data(dct, user):
     dct.update({'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,
+                'birthday': user.userprofile.birthday if user.userprofile else None,
                 'bio': user.userprofile.bio if user.userprofile else None,
                 'other': user.userprofile.other if user.userprofile else None,
                 'skype': user.userprofile.skype if user.userprofile else None,

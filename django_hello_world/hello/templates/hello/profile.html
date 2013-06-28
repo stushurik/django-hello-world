@@ -53,7 +53,7 @@
                             {% if home %}
                                 {{ form.data.birthday|date:"Y-m-d" }}
                             {% else %}
-                                {{ form.birthday|date:"Y-m-d" }}
+                                {{ form.birthday}}
                             {% endif %}
                         </td>
                         <td>Jabber:<br>
@@ -105,7 +105,7 @@
                 </table>
         {% if not home %}
             <input type="submit" class="btn btn-large btn btn-success">
-
+            <a href="/">Cancel</a>
         </form>
 
         <div id='loader'>
@@ -169,4 +169,5 @@
 
         </script>
     {% endif %}
+
 {% endblock %}
