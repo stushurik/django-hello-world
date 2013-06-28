@@ -1,0 +1,9 @@
+.cells{
+    vertical-align: top;
+    width: 335px;
+    height: 450px;
+}
+
+textarea{
+    text-align: left;
+}
