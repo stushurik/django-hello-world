@@ -70,6 +70,31 @@ class HttpTest(TestCase):
     def test_requests(self):
         response = self.client.get(reverse('requests'))
         self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('requests_list'), {'start': "0", 'end': "0"})
+        self.assertTemplateUsed(response,'hello/request_list.html')
+
+        response_data_v1 = {'success': True,
+                            'message': "Priority was successful changed!"
+                            }
+        response_data_v2 = {'success': False,
+                            'message': "Error: with DB operations!"
+                            }
+        response_data_v3 = {'success': False,
+                            'message': "Error: priority value is not integer!"
+                            }
+        response_data_v4 = {'success': False,
+                            'message': "Error: there is no request id!"
+                            }
+        response = self.client.post(reverse('change_priority'), {'id': "1", 'value': "100"})
+        self.assertContains(response,json.dumps(response_data_v1))
+        response = self.client.post(reverse('change_priority'), {'id': "-1", 'value': "100"})
+        self.assertContains(response,json.dumps(response_data_v2))
+        response = self.client.post(reverse('change_priority'), {'id': "1", 'value': "string"})
+        self.assertContains(response,json.dumps(response_data_v3))
+        response = self.client.post(reverse('change_priority'), {'value': "100"})
+        self.assertContains(response,json.dumps(response_data_v4))
+        print response
+
 
     def test_login(self):
         response = self.client.post(reverse('profile'), {'username': "admin", 'pass': "2"})
