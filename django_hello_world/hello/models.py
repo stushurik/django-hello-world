@@ -24,6 +24,7 @@ class UserProfile(models.Model):
 
 
 class WebRequest(models.Model):
+    priority = models.PositiveSmallIntegerField(default=0)
     time = models.DateTimeField(auto_now_add=True)
     host = models.CharField(max_length=1000)
     path = models.CharField(max_length=1000)
@@ -50,7 +51,6 @@ class ModelsOperation(models.Model):
     OPERATION = (('Creation', 'Creation'),
                  ('Deletion', 'Deletion'),
                  ('Editing', 'Editing')
-    )
+                 )
     operation = models.CharField(choices=OPERATION, max_length=10)
     model_class = models.CharField(max_length=2000)
-
