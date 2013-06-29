@@ -62,9 +62,12 @@ class RequestListView(ListView):
     template_name = 'hello/request_list.html'
 
     def post(self, request, *args, **kwargs):
-        start = request.POST.get('start', 2)
-        end = request.POST.get('end', 2)
-        self.queryset = WebRequest.objects.filter(priority__range=(start, end))
+        try:
+            start = int(request.POST.get('start', 2))
+            end = int(request.POST.get('end', 2))
+        except:
+            return HttpResponse("Please enter integer value of priority!")
+        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by('priority')
         self.object_list = self.get_queryset()
         context = self.get_context_data(object_list=self.object_list)
         return self.render_to_response(context)
@@ -79,7 +82,6 @@ class ChangePriority(View):
             try:
                 value = int(request.POST.get('value'))
                 try:
-                    print request_id, value
                     request_record = WebRequest.objects.get(id=request_id)
                     request_record.priority = value
                     request_record.save()

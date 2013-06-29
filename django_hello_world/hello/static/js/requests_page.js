@@ -1,5 +1,5 @@
 show_list = function(data){
-    $('#list_container').append(data)
+    $('#list_container').append(data);
     $('#list_param_form').find('input, textarea, button').removeAttr('disabled');
     $('.priority').change(function(event) {
         $.ajax({
@@ -38,7 +38,7 @@ $(document).ready(function() {
 
     var options = {
         beforeSubmit:function () {
-                $("#list").remove();
+                $("#list_container").empty();
                 return true;
         },
         success: show_list

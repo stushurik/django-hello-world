@@ -72,6 +72,8 @@ class HttpTest(TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('requests_list'), {'start': "0", 'end': "0"})
         self.assertTemplateUsed(response,'hello/request_list.html')
+        response = self.client.post(reverse('requests_list'), {'start': "string", 'end': "string"})
+        self.assertContains(response,'Please enter integer value of priority!')
 
         response_data_v1 = {'success': True,
                             'message': "Priority was successful changed!"
@@ -93,7 +95,6 @@ class HttpTest(TestCase):
         self.assertContains(response,json.dumps(response_data_v3))
         response = self.client.post(reverse('change_priority'), {'value': "100"})
         self.assertContains(response,json.dumps(response_data_v4))
-        print response
 
 
     def test_login(self):
