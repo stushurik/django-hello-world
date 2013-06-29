@@ -55,9 +55,43 @@ class IndexView(DetailFormView):
         return context
 
 
-class ListRequestView(ListView):
-    model = WebRequest
+class RequestView(TemplateView):
     template_name = 'hello/requests.html'
+
+class RequestListView(ListView):
+    template_name = 'hello/request_list.html'
+
+    def post(self, request, *args, **kwargs):
+        start = request.POST.get('start', 2)
+        end = request.POST.get('end', 2)
+        self.queryset = WebRequest.objects.filter(priority__range=(start, end))
+        self.object_list = self.get_queryset()
+        context = self.get_context_data(object_list=self.object_list)
+        return self.render_to_response(context)
+
+class ChangePriority(View):
+    def post(self, request, *args, **kwargs):
+        response_data = {'success': False,
+                         'message': ""
+                         }
+        request_id = request.POST.get('id')
+        if request_id:
+            try:
+                value = int(request.POST.get('value'))
+                try:
+                    print request_id, value
+                    request_record = WebRequest.objects.get(id=request_id)
+                    request_record.priority = value
+                    request_record.save()
+                    response_data['success'] = True
+                    response_data['message'] = "Priority was successful changed!"
+                except:
+                    response_data['message'] = "Error: with DB operations!"
+            except:
+                response_data['message'] = "Error: priority value is not integer!"
+        else:
+            response_data['message'] = "Error: there is no request id!"
+        return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
 
 class AuthenticationView(TemplateView):

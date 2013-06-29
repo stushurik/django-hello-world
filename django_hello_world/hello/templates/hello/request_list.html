@@ -1,0 +1,55 @@
+{#<form action="/requests/xxxxx/" method="POST" id="list_form">#}
+{#<input type="submit" class="btn btn-large btn btn-warning" value="Change priority">#}
+<table class="table table-bordered" id="list">
+    <thead>
+        <tr>
+            <th> # </th>
+            <th>Priority</th>
+            <th>Time</th>
+            <th>Host</th>
+            <th>Path</th>
+            <th>Method</th>
+            <th>URI</th>
+            <th>User agent</th>
+            <th>Remote address </th>
+            <th>Remote address forward</th>
+            <th>Meta</th>
+            <th>Cookies</th>
+            <th>GET</th>
+            <th>POST</th>
+            <th>Raw POST</th>
+            <th>is secure</th>
+            <th>is ajax</th>
+            <th>User</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in object_list %}
+            {% if forloop.counter|divisibleby:"2" %}
+                <tr class="info">
+                    {% else %}
+                <tr class="success">
+            {% endif %}
+                <td>{{ forloop.counter }}</td>
+                <td><input type="text" id="{{ request.id }}"  class="priority" value="{{ request.priority }}"/></td>
+                <td>{{ request.time }}</td>
+                <td>{{ request.host }}</td>
+                <td>{{ request.path}}</td>
+                <td>{{ request.method }}</td>
+                <td>{{ request.uri }}</td>
+                <td>{{ request.user_agent }}</td>
+                <td>{{ request.remote_addr }}</td>
+                <td>{{ request.remote_addr_fwd }}</td>
+                <td>{{ request.meta }}</td>
+                <td>{{ request.cookies }}</td>
+                <td>{{ request.get }}</td>
+                <td>{{ request.post }}</td>
+                <td>{{ request.raw_post }}</td>
+                <td>{{ request.is_secure }}</td>
+                <td>{{ request.is_ajax }}</td>
+                <td>{{ request.user }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{#</form>#}
