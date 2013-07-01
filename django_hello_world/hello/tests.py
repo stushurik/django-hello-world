@@ -80,3 +80,18 @@ class WebRequestMiddlewareTest(TestCase):
                                             method='GET'
                                             )
         self.assertEqual(len(request), 1)
+
+
+        for i in range(1,10):
+            c.cookies['request_number'] = i
+            c.get(reverse('home'))
+        for i in range(10,20):
+            c.cookies['request_number'] = i
+            c.post(reverse('login'),PATH=reverse('login'))
+
+        request_list = WebRequest.objects.all()[:10]
+        response = c.get(reverse('requests'))
+        for request in request_list:
+            self.assertContains(response, request.time)
+            self.assertContains()
+
