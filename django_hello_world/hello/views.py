@@ -127,12 +127,16 @@ class SaveProfile(View):
         response_data = {'success': True,
                          'message': "Data was successful saved!"
                          }
+        def save(obj):
+            getattr(obj,'save')()
+
         try:
             user = get_user(request)
             user_form = UserForm(instance=user, data=request.POST)
             user_profile_form = UserProfileForm(instance=user.userprofile, data=request.POST)
-            user_form.save()
-            user_profile_form.save()
+            
+            for instance in (user_form,user_profile_form):
+                save(instance)
         except:
             response_data['success'] = False
             response_data['message'] = "Error while saving data!"
