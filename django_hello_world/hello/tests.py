@@ -105,57 +105,55 @@ class HttpTest(TestCase):
         admin = User.objects.get(username='admin')
         self.client.login(username="admin", password="1")
         self.client.post(reverse('save_profile'),
-                                    {'first_name': 'Test',
-                                     'last_name': 'Test',
-                                     'email': 'test@test.com',
-                                     'birthday': '2092-12-12',
-                                     'bio': 'test',
-                                     'other':'test',
-                                     'skype': 'test',
-                                     'jabber': 'test',
-                                     'contacts': 'test',
-                                     }
-                                    )
+                         {'first_name': 'Test',
+                          'last_name': 'Test',
+                          'email': 'test@test.com',
+                          'birthday': '2092-12-12',
+                          'bio': 'test',
+                          'other': 'test',
+                          'skype': 'test',
+                          'jabber': 'test',
+                          'contacts': 'test',
+                          }
+                         )
 
         self.assertEqual(1, len(User.objects.filter(first_name='Test',
                                                     last_name='Test',
                                                     email='test@test.com'
                                                     )
-                                 )
+                                )
                          )
         test_user = User.objects.get(first_name='Test',
-                                        last_name='Test',
-                                        email='test@test.com'
-                                        )
-        self.assertEqual(admin.id,test_user.id)
-
+                                     last_name='Test',
+                                     email='test@test.com'
+                                     )
+        self.assertEqual(admin.id, test_user.id)
 
 
 class WebRequestMiddlewareTest(TestCase):
 
     def test_requests(self):
         self.client.get(reverse('home'),
-              PATH=reverse('home'),
-              HTTP_USER_AGENT='Mozilla/5.0'
-              )
+                        PATH=reverse('home'),
+                        HTTP_USER_AGENT='Mozilla/5.0'
+                        )
         request = WebRequest.objects.filter(path=reverse('home'),
                                             user_agent='Mozilla/5.0',
                                             method='GET'
                                             )
         self.assertEqual(len(request), 1)
 
-
-        for i in range(1,10):
+        for i in range(1, 10):
             self.client.cookies['request_number'] = i
             self.client.get(reverse('home'))
-        for i in range(10,20):
+        for i in range(10, 20):
             self.client.cookies['request_number'] = i
             self.client.post(reverse('login'), PATH=reverse('login'))
 
         request_list = WebRequest.objects.all()[:10]
         response = self.client.get(reverse('requests'))
         for request in request_list:
-             self.assertContains(response, request.time)
+            self.assertContains(response, request.time)
 
 
 class ContextTestCase(TestCase):

@@ -54,10 +54,12 @@ class ListRequestView(ListView):
 class LoginFormView(TemplateView):
     template_name = 'hello/login.html'
 
+
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return HttpResponseRedirect(reverse('home'))
+
 
 class AuthenticationView(View):
 
@@ -127,7 +129,6 @@ class SaveProfile(View):
                          }
         try:
             user = get_user(request)
-
             user_form = UserForm(instance=user, data=request.POST)
             user_profile_form = UserProfileForm(instance=user.userprofile, data=request.POST)
             user_form.save()
