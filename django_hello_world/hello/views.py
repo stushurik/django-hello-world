@@ -83,11 +83,6 @@ class UserDataFormView(DetailFormView):
             return super(UserDataFormView, self).get(request, *args, **kwargs)
         return HttpResponseRedirect(reverse('login'))
 
-    def get_context_data(self, **kwargs):
-        context = super(UserDataFormView, self).get_context_data(**kwargs)
-        context['user'] = self.request.user
-        return context
-
 
 class UploadFile(View):
     def post(self, request, *args, **kwargs):

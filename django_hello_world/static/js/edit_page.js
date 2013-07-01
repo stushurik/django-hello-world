@@ -10,9 +10,9 @@ $(document).ready(function() {
                     }
                 };
 
-                $('#id_uploaded_file').change(function(){
+                $('#id_avatar').change(function(){
                     var data = new FormData();
-                    $.each($('#id_uploaded_file')[0].files, function(i, file) {
+                    $.each($('#id_avatar')[0].files, function(i, file) {
                             data.append('uploaded_file', file);
                     });
 
@@ -37,7 +37,7 @@ $(document).ready(function() {
                         url: '/profile/delete_file/',
                         data:{ csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value},
                         success: function(data){
-                            $('#id_uploaded_file').val('');
+                            $('#id_avatar').val('');
                             $('.img-polaroid').attr('src',data);
                         }
                     });
