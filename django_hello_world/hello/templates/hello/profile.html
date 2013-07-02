@@ -5,7 +5,7 @@
 {% block extra %}
     <script src="/static/js/jquery-1.9.1.min.js"></script>
     <script src="/static/js/jquery.form.js"></script>
-    {{ form.media }}
+    {{ user_profile_form.media }}
     {% if not home %}
         <script src="/static/js/edit_page.js"></script>
     {% endif %}
@@ -13,9 +13,8 @@
 
 {% block content %}
 
-        {% get_profile requested_user as profile%}
+        {% get_profile user as profile%}
         {% if not home %}
-            <a href="http://{{ host }}/{% edit_link requested_user %}">{{ host }}/{% edit_link requested_user %}</a><br>
             <form action="/profile/save_profile/" method="POST" id="user_data_form">
 
             {% csrf_token %}
@@ -24,48 +23,48 @@
                     <tr>
                         <td>Name:<br>
                             {% if home %}
-                                {{ form.data.first_name }}
+                                {{ user_form.instance.first_name }}
                             {% else %}
-                                {{ form.first_name }}
+                                {{ user_form.first_name }}
                             {% endif %}
                         </td>
                         <td>Contacts:<br>
                             {% if home %}
-                                {{ form.data.contacts }}
+                                {{ user_profile_form.instance.contacts }}
                             {% else %}
-                                {{ form.contacts }}
+                                {{ user_profile_form.contacts }}
                             {% endif %}
                         </td>
                     </tr>
                     <tr>
                         <td>Last name:<br>
                             {% if home %}
-                                {{ form.data.last_name }}
+                                {{ user_form.instance.last_name }}
                             {% else %}
-                                {{ form.last_name }}
+                                {{ user_form.last_name }}
                             {% endif %}
                         </td>
                         <td>Email:<br>
                             {% if home %}
-                                {{ form.data.email }}
+                                {{ user_form.instance.email }}
                             {% else %}
-                                {{ form.email }}
+                                {{ user_form.email }}
                             {% endif %}
                         </td>
                     </tr>
                     <tr>
                         <td>Date of birth:<br>
                             {% if home %}
-                                {{ form.data.birthday|date:"Y-m-d" }}
+                                {{ user_profile_form.instance.birthday|date:"Y-m-d" }}
                             {% else %}
-                                {{ form.birthday }}
+                                {{ user_profile_form.birthday}}
                             {% endif %}
                         </td>
                         <td>Jabber:<br>
                             {% if home %}
-                                {{ form.data.jabber }}
+                                {{ user_profile_form.instance.jabber }}
                             {% else %}
-                                {{ form.jabber }}
+                                {{ user_profile_form.jabber }}
                             {% endif %}
                         </td>
                     </tr>
@@ -77,33 +76,33 @@
                                 width="300px" height="1000px" class="img-polaroid">
                                 {% if not home %}
                                     <img src="/static/img/close.png" id="close" width="20px" height="20px" id="close">
-                                    {{ form.uploaded_file }}
+                                    {{ user_profile_form.avatar }}
                                 {% endif %}
                             </div>
                         </td>
                         <td>Skype:<br>
                             {% if home %}
-                                {{ form.data.skype }}
+                                {{ user_profile_form.instance.skype }}
                             {% else %}
-                                {{ form.skype }}
+                                {{user_profile_form.skype }}
                             {% endif %}
                         </td>
                     </tr>
                     <tr>
                         <td>Other contacts:<br>
                             {% if home %}
-                                {{ form.data.other }}
+                                {{ user_profile_form.instance.other }}
                             {% else %}
-                                {{ form.other }}
+                                {{ user_profile_form.other }}
                             {% endif %}
                         </td>
                     </tr>
                     <tr>
                         <td>Bio:<br>
                             {% if home %}
-                                {{ form.data.bio }}
+                                {{ user_profile_form.instance.bio }}
                             {% else %}
-                                {{ form.bio }}
+                                {{ user_profile_form.bio }}
                             {% endif %}
                         </td>
                     </tr>
@@ -117,13 +116,7 @@
             Loading... please wait
             <img src="static/img/spinner.gif"/>
         </div>
-        <script>
-
-
-        </script>
     {% endif %}
-
     <div class="alert hide" id="message">
     </div>
-
 {% endblock %}
