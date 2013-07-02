@@ -71,9 +71,9 @@ class WebRequestMiddlewareTest(TestCase):
 
     def test_saving_one_request(self):
         self.client.get(reverse('home'),
-              PATH=reverse('home'),
-              HTTP_USER_AGENT='Mozilla/5.0'
-              )
+                        PATH=reverse('home'),
+                        HTTP_USER_AGENT='Mozilla/5.0'
+                        )
         request = WebRequest.objects.filter(path=reverse('home'),
                                             user_agent='Mozilla/5.0',
                                             method='GET'
@@ -103,12 +103,11 @@ class WebRequestMiddlewareTest(TestCase):
             self.assertEqual(request.method, 'POST')
             self.assertEqual(request.path, reverse('requests'))
 
-
     def test_pass_params_get(self):
         params = {"test1": "str"}
         self.client.get(reverse('requests'),
-              params,
-              )
+                        params,
+                        )
         request = WebRequest.objects.latest('time')
         self.assertEqual(request.path, reverse('requests'))
         self.assertEqual(request.get, json.dumps(params))
@@ -116,9 +115,9 @@ class WebRequestMiddlewareTest(TestCase):
     def test_pass_params_post(self):
         params = {"test1": "str"}
         self.client.post('/admin/',
-               params,
-               HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-               )
+                         params,
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+                         )
 
         request = WebRequest.objects.latest('time')
         self.assertEqual(request.path, '/admin/')
