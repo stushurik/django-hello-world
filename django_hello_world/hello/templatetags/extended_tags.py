@@ -1,7 +1,9 @@
+from django.core.urlresolvers import NoReverseMatch
 from django.contrib.auth.models import User
 from django import template
 
 from django_hello_world.hello.models import UserProfile
+from django.core import urlresolvers
 
 register = template.Library()
 
@@ -16,7 +18,13 @@ def get_profile(user):
 
 @register.simple_tag
 def edit_link(obj):
-    if User.objects.filter(pk=obj.id):
-        return "admin/auth/user/%i" % obj.id
-    else:
-        return None
+    change_url = ''
+    obj_id = getattr(obj, 'id', None)
+    url = 'admin:hello_%s_change' % type(obj).__name__.lower()
+    try:
+        change_url = urlresolvers.reverse(url, args=(obj_id, ))
+    except NoReverseMatch:
+        pass
+    return change_url
+
+

@@ -22,7 +22,8 @@ class DetailFormView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailFormView, self).get_context_data(**kwargs)
-        context['host'] = self.request.get_host()
+        context['request'] = self.request
+        print self.request.user, type(self.request.user)
         context['user_form'] = self.user_form
         context['user_profile_form'] = self.user_profile_form
         return context

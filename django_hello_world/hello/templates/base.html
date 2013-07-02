@@ -1,3 +1,5 @@
+{% load extended_tags %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -15,7 +17,12 @@
     {% if user.is_anonymous %}
         <a href="/login">Login</a>
     {% else %}
-        <h7>Hello, <strong>{{ user }}</strong> !   <a href="/profile">Edit</a> | <a href="/logout">Logout</a></h7>
+        {% get_profile user as profile%}
+        <h7>Hello, <strong>{{ user }}</strong> !
+            <a href="/profile">Edit</a> |
+            <a href="/logout">Logout</a> |
+            <a href={% edit_link profile %}>(admin)</a>
+        </h7>
     {% endif %}
     <hr>
     {% block body %}

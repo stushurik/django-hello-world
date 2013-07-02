@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% load extended_tags %}
-
 {% block extra %}
     <script src="/static/js/jquery-1.9.1.min.js"></script>
     <script src="/static/js/jquery.form.js"></script>
@@ -13,7 +11,6 @@
 
 {% block content %}
 
-        {% get_profile user as profile%}
         {% if not home %}
             <form action="/profile/save_profile/" method="POST" id="user_data_form">
 
