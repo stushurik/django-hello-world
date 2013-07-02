@@ -11,7 +11,12 @@
 </head>
 
 <body>
-    42 Coffee Cups Test Assignment <a href="/login">Login</a>
+    42 Coffee Cups Test Assignment
+    {% if user.is_anonymous %}
+        <a href="/login">Login</a>
+    {% else %}
+        <h7>Hello, <strong>{{ user }}</strong> !   <a href="/profile">Edit</a> | <a href="/logout">Logout</a></h7>
+    {% endif %}
     <hr>
     {% block body %}
         {% block content %}
