@@ -27,8 +27,7 @@ class HttpTest(TestCase):
     def test_home(self):
         admin = User.objects.get(email='stu.shurik@gmail.com')
 
-        c = Client()
-        response = c.get(reverse('home'))
+        response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, 'Name')
@@ -70,9 +69,8 @@ class HttpTest(TestCase):
 
 class WebRequestMiddlewareTest(TestCase):
 
-    def test_requests(self):
-        c = Client()
-        c.get(reverse('home'),
+    def test_saving_one_request(self):
+        self.client.get(reverse('home'),
               PATH=reverse('home'),
               HTTP_USER_AGENT='Mozilla/5.0'
               )
@@ -82,29 +80,42 @@ class WebRequestMiddlewareTest(TestCase):
                                             )
         self.assertEqual(len(request), 1)
 
-        for i in range(1, 10):
-            c.cookies['request_number'] = i
-            c.get(reverse('home'))
+    def test_only_first_ten_requests(self):
+        for i in range(0, 10):
+            self.client.cookies['request_number'] = i
+            self.client.get(reverse('home'))
         for i in range(10, 20):
-            c.cookies['request_number'] = i
-            c.post(reverse('requests'), PATH=reverse('requests'))
+            self.client.cookies['request_number'] = i
+            self.client.post(reverse('requests'), PATH=reverse('requests'))
 
         request_list = WebRequest.objects.all()[:10]
-        response = c.get(reverse('requests'))
+        response = self.client.get(reverse('requests'))
         for request in request_list:
             self.assertContains(response, request.time)
             self.assertEqual(request.method, 'GET')
             self.assertEqual(request.path, reverse('home'))
 
+        #Last 20 request not in rendered page
+        request_list = WebRequest.objects.all()[10:20]
+        response = self.client.get(reverse('requests'))
+        for request in request_list:
+            self.assertNotContains(response, request.time)
+            self.assertEqual(request.method, 'POST')
+            self.assertEqual(request.path, reverse('requests'))
+
+
+    def test_pass_params_get(self):
         params = {"test1": "str"}
-        c.get(reverse('requests'),
+        self.client.get(reverse('requests'),
               params,
               )
         request = WebRequest.objects.latest('time')
         self.assertEqual(request.path, reverse('requests'))
         self.assertEqual(request.get, json.dumps(params))
 
-        c.post('/admin/',
+    def test_pass_params_post(self):
+        params = {"test1": "str"}
+        self.client.post('/admin/',
                params,
                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
                )
