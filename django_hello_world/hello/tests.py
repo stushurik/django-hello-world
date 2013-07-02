@@ -4,6 +4,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import json
 from django.contrib.auth.models import User
 
 from django.core.urlresolvers import reverse
@@ -87,11 +88,32 @@ class WebRequestMiddlewareTest(TestCase):
             c.get(reverse('home'))
         for i in range(10,20):
             c.cookies['request_number'] = i
-            c.post(reverse('login'),PATH=reverse('login'))
+            c.post(reverse('requests'),PATH=reverse('requests'))
 
         request_list = WebRequest.objects.all()[:10]
         response = c.get(reverse('requests'))
         for request in request_list:
             self.assertContains(response, request.time)
-            self.assertContains()
+            self.assertEqual(request.method,'GET')
+            self.assertEqual(request.path,reverse('home'))
+
+        params = {"test1": "str"}
+        c.get(reverse('requests'),
+              params,
+              )
+        request = WebRequest.objects.latest('time')
+        self.assertEqual(request.path,reverse('requests'))
+        self.assertEqual(request.get,json.dumps(params))
+
+        response = c.post('/admin/',
+                          params,
+                          HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+                          )
+
+        request = WebRequest.objects.latest('time')
+        self.assertEqual(request.path,'/admin/')
+        self.assertEqual(request.method,'POST')
+        self.assertEqual(request.is_ajax,True)
+        self.assertEqual(request.post,json.dumps(params))
+
 
