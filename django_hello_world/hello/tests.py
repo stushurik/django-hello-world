@@ -68,10 +68,6 @@ class HttpTest(TestCase):
         self.assertContains(response, admin.userprofile.other)
         self.assertEqual("-", admin.userprofile.other)
 
-    def test_requests(self):
-        response = self.client.get(reverse('requests'))
-        self.assertEqual(response.status_code, 200)
-
     def test_login(self):
         response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "2"})
         self.assertEqual(response.status_code, 302)
@@ -81,18 +77,27 @@ class HttpTest(TestCase):
         self.assertRedirects(response, reverse('home'))
         self.client.logout()
 
+    def test_redirect(self):
         response = self.client.get(reverse('profile'))
         self.assertRedirects(response, reverse('login'))
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 302)
+
+    def test_hello_message(self):
         self.client.login(username="admin", password="1")
         response = self.client.get(reverse('home'))
         self.assertContains(response, "Hello, <strong>admin</strong> !")
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
-        self.client.logout()
+
+    def test_logout_link(self):
+        self.client.login(username="admin", password="1")
+        response = self.client.get(reverse('profile'))
         self.assertContains(response, "Logout")
 
+    def test_edit_page_content(self):
+        self.client.login(username="admin", password="1")
+        response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Olexandr")
         self.assertContains(response, "Poplavskyi")
@@ -140,7 +145,7 @@ class HttpTest(TestCase):
 
 class WebRequestMiddlewareTest(TestCase):
 
-    def test_requests(self):
+    def test_saving_one_request(self):
         self.client.get(reverse('home'),
                         PATH=reverse('home'),
                         HTTP_USER_AGENT='Mozilla/5.0'
@@ -151,17 +156,50 @@ class WebRequestMiddlewareTest(TestCase):
                                             )
         self.assertEqual(len(request), 1)
 
-        for i in range(1, 10):
+    def test_only_first_ten_requests(self):
+        for i in range(0, 10):
             self.client.cookies['request_number'] = i
             self.client.get(reverse('home'))
         for i in range(10, 20):
             self.client.cookies['request_number'] = i
-            self.client.post(reverse('login'), PATH=reverse('login'))
+            self.client.post(reverse('requests'), PATH=reverse('requests'))
 
         request_list = WebRequest.objects.all()[:10]
         response = self.client.get(reverse('requests'))
         for request in request_list:
             self.assertContains(response, request.time)
+            self.assertEqual(request.method, 'GET')
+            self.assertEqual(request.path, reverse('home'))
+
+        #Last 20 request not in rendered page
+        request_list = WebRequest.objects.all()[10:20]
+        response = self.client.get(reverse('requests'))
+        for request in request_list:
+            self.assertNotContains(response, request.time)
+            self.assertEqual(request.method, 'POST')
+            self.assertEqual(request.path, reverse('requests'))
+
+    def test_pass_params_get(self):
+        params = {"test1": "str"}
+        self.client.get(reverse('requests'),
+                        params,
+                        )
+        request = WebRequest.objects.latest('time')
+        self.assertEqual(request.path, reverse('requests'))
+        self.assertEqual(request.get, json.dumps(params))
+
+    def test_pass_params_post(self):
+        params = {"test1": "str"}
+        self.client.post('/admin/',
+                         params,
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+                         )
+
+        request = WebRequest.objects.latest('time')
+        self.assertEqual(request.path, '/admin/')
+        self.assertEqual(request.method, 'POST')
+        self.assertEqual(request.is_ajax, True)
+        self.assertEqual(request.post, json.dumps(params))
 
 
 class ContextTestCase(TestCase):
