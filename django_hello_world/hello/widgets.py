@@ -16,7 +16,7 @@ class CalendarWidget(TextInput):
                          'data-date-format=\"yyyy-mm-dd\" '
                          'data-date-viewmode=\"years\">'
                          '<input type=\"text\" '
-                         'id=\"birth\"  name=\"birth\" value=\"%s\">'
+                         'id=\"birth\"  name=\"birthday\" value=\"%s\">'
                          '<span class=\"add-on\"><i class="icon-calendar">'
                          '</i></span></div>' %
                          value
