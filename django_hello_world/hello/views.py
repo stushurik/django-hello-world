@@ -58,6 +58,7 @@ class IndexView(DetailFormView):
 class RequestView(TemplateView):
     template_name = 'hello/requests.html'
 
+
 class RequestListView(ListView):
     template_name = 'hello/request_list.html'
 
@@ -71,6 +72,7 @@ class RequestListView(ListView):
         self.object_list = self.get_queryset()
         context = self.get_context_data(object_list=self.object_list)
         return self.render_to_response(context)
+
 
 class ChangePriority(View):
     def post(self, request, *args, **kwargs):
@@ -95,6 +97,7 @@ class ChangePriority(View):
             response_data['message'] = "Error: there is no request id!"
         return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
+
 class Sort(ListView):
     template_name = 'hello/request_list.html'
 
@@ -106,10 +109,10 @@ class Sort(ListView):
             end = int(request.POST.get('end', 0))
         except:
             return HttpResponse("Please enter integer value of priority!")
-        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by("-"+field if sort_order=='asc' else field)
+        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by("-" + field if sort_order == 'asc' else field)
         self.object_list = self.get_queryset()
         context = self.get_context_data(object_list=self.object_list)
-        context['order_'+field] = "desc" if sort_order=='asc' else 'asc'
+        context['order_' + field] = "desc" if sort_order == 'asc' else 'asc'
         return self.render_to_response(context)
 
 
