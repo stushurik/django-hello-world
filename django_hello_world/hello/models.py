@@ -50,7 +50,6 @@ class ModelsOperation(models.Model):
     OPERATION = (('Creation', 'Creation'),
                  ('Deletion', 'Deletion'),
                  ('Editing', 'Editing')
-    )
+                 )
     operation = models.CharField(choices=OPERATION, max_length=10)
     model_class = models.CharField(max_length=2000)
-
