@@ -4,13 +4,18 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from StringIO import StringIO
 import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.core.management import call_command
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+import sys
+from django.utils import unittest
 
 from django_hello_world.hello.models import WebRequest
 
@@ -207,3 +212,24 @@ class ContextTestCase(TestCase):
         response = self.client.get(reverse('home'))
         self.assertTrue('settings' in response.context)
         self.assertEqual(response.context['settings'], settings)
+
+
+class ManagementCommandTestCase(unittest.TestCase):
+    def test_command(self):
+        out, err = '', ''
+        for ct in ContentType.objects.all():
+            m = ct.model_class()
+            message = (m.__module__,
+                       m.__name__,
+                       m._default_manager.count()
+                       )
+            out += "%s.%s\t%d\n" % message
+            err += "error:%s.%s\t%d\n" % message
+
+        stdout, stderr = sys.stdout, sys.stderr
+        sys.stdout = c1 = StringIO()
+        sys.stderr = c2 = StringIO()
+        call_command('count_objects')
+        self.assertEqual(c1.getvalue(), out)
+        self.assertEqual(c2.getvalue(), err)
+        sys.stdout, sys.stderr = stdout, stderr
