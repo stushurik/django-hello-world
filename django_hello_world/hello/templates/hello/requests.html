@@ -9,9 +9,15 @@
      <form action="/requests/list/" method="POST" id="list_param_form">
         {% csrf_token %}
          From
-        <input type="text" name="start" value="2"/>
+        <select type="text" name="start" id="start">
+            <option>0</option>
+            <option>1</option>
+        </select>
          to
-        <input type="text" name="end" value="2"/>
+        <select type="text" name="end" id="end">
+            <option>0</option>
+            <option>1</option>
+        </select>
          priority
         <input type="submit" class="btn btn-large btn btn-success" value="Select requests">
     </form>

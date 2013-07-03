@@ -63,8 +63,8 @@ class RequestListView(ListView):
 
     def post(self, request, *args, **kwargs):
         try:
-            start = int(request.POST.get('start', 2))
-            end = int(request.POST.get('end', 2))
+            start = int(request.POST.get('start', 0))
+            end = int(request.POST.get('end', 0))
         except:
             return HttpResponse("Please enter integer value of priority!")
         self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by('priority')
@@ -94,6 +94,23 @@ class ChangePriority(View):
         else:
             response_data['message'] = "Error: there is no request id!"
         return HttpResponse(json.dumps(response_data), mimetype="application/json")
+
+class Sort(ListView):
+    template_name = 'hello/request_list.html'
+
+    def post(self, request, *args, **kwargs):
+        field = str(request.POST.get('id'))
+        sort_order = request.POST.get('type')
+        try:
+            start = int(request.POST.get('start', 0))
+            end = int(request.POST.get('end', 0))
+        except:
+            return HttpResponse("Please enter integer value of priority!")
+        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by("-"+field if sort_order=='asc' else field)
+        self.object_list = self.get_queryset()
+        context = self.get_context_data(object_list=self.object_list)
+        context['order_'+field] = "desc" if sort_order=='asc' else 'asc'
+        return self.render_to_response(context)
 
 
 class AuthenticationView(TemplateView):

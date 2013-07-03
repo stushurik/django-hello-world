@@ -71,9 +71,9 @@ class HttpTest(TestCase):
         response = self.client.get(reverse('requests'))
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('requests_list'), {'start': "0", 'end': "0"})
-        self.assertTemplateUsed(response,'hello/request_list.html')
+        self.assertTemplateUsed(response, 'hello/request_list.html')
         response = self.client.post(reverse('requests_list'), {'start': "string", 'end': "string"})
-        self.assertContains(response,'Please enter integer value of priority!')
+        self.assertContains(response, 'Please enter integer value of priority!')
 
         response_data_v1 = {'success': True,
                             'message': "Priority was successful changed!"
@@ -88,14 +88,29 @@ class HttpTest(TestCase):
                             'message': "Error: there is no request id!"
                             }
         response = self.client.post(reverse('change_priority'), {'id': "1", 'value': "100"})
-        self.assertContains(response,json.dumps(response_data_v1))
+        self.assertContains(response, json.dumps(response_data_v1))
         response = self.client.post(reverse('change_priority'), {'id': "-1", 'value': "100"})
-        self.assertContains(response,json.dumps(response_data_v2))
+        self.assertContains(response, json.dumps(response_data_v2))
         response = self.client.post(reverse('change_priority'), {'id': "1", 'value': "string"})
-        self.assertContains(response,json.dumps(response_data_v3))
+        self.assertContains(response, json.dumps(response_data_v3))
         response = self.client.post(reverse('change_priority'), {'value': "100"})
-        self.assertContains(response,json.dumps(response_data_v4))
+        self.assertContains(response, json.dumps(response_data_v4))
 
+        # for i in range(0, 5):
+        #     self.client.cookies['request_number'] = i
+        #     self.client.get(reverse('home'))
+
+        response = self.client.post(reverse('sort'),
+                                    {'id': "time",
+                                     'type': "asc",
+                                     'start': '0',
+                                     'end': '0'
+                                     }
+                                    )
+
+        request_list = WebRequest.objects.filter(priority__range=(0, 0)).order_by("-time")
+        for request in request_list:
+            self.assertContains(response, request.time)
 
     def test_login(self):
         response = self.client.post(reverse('profile'), {'username': "admin", 'pass': "2"})
@@ -155,7 +170,7 @@ class SignalProcessorTestCase(TestCase):
                                                                  )
                                   )
         user = User.objects.create(username='test_signal')
-        self.assertEqual(number_of_operation+1,
+        self.assertEqual(number_of_operation + 1,
                          len(ModelsOperation.objects.filter(operation='Creation',
                                                             model_class='User'
                                                             )
@@ -167,20 +182,20 @@ class SignalProcessorTestCase(TestCase):
                                   )
         user.username = 'test_signal_edit'
         user.save()
-        self.assertEqual(number_of_operation+1,
-                 len(ModelsOperation.objects.filter(operation='Editing',
-                                                    model_class='User'
-                                                    )
-                     )
-                 )
+        self.assertEqual(number_of_operation + 1,
+                         len(ModelsOperation.objects.filter(operation='Editing',
+                                                            model_class='User'
+                                                            )
+                             )
+                         )
         number_of_operation = len(ModelsOperation.objects.filter(operation='Deletion',
                                                                  model_class='User'
                                                                  )
                                   )
         user.delete()
-        self.assertEqual(number_of_operation+1,
-                 len(ModelsOperation.objects.filter(operation='Deletion',
-                                                    model_class='User'
-                                                    )
-                     )
-                 )
+        self.assertEqual(number_of_operation + 1,
+                         len(ModelsOperation.objects.filter(operation='Deletion',
+                                                            model_class='User'
+                                                            )
+                             )
+                         )

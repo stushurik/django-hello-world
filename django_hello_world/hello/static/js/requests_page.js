@@ -25,6 +25,23 @@ show_list = function(data){
         }
         });
     });
+    $('.sort').click(function(event) {
+        $("#list_container").empty();
+        start = $('#start').find(":selected").text();
+        end = $('#end').find(":selected").text();
+        $.ajax({
+            url: '/requests/sort/',
+            data: {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                id: event.target.id,
+                type: event.target.className.split(" ")[1],
+                start: start,
+                end: end
+            },
+            type: 'POST',
+            success: show_list
+        });
+    });
 
 };
 

@@ -4,7 +4,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django_hello_world import settings
 from django_hello_world.hello.views import IndexView, AuthenticationView, \
-UserDataUpdate, UploadFile, DeleteFile, SaveProfile, RequestView, RequestListView, ChangePriority
+UserDataUpdate, UploadFile, DeleteFile, SaveProfile, RequestView, RequestListView, ChangePriority, Sort
 
 admin.autodiscover()
 
@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^requests/$', RequestView.as_view(), name='requests'),
     url(r'^requests/list/$', RequestListView.as_view(), name='requests_list'),
     url(r'^requests/change_priority/$', ChangePriority.as_view(), name='change_priority'),
+    url(r'^requests/sort/$', Sort.as_view(), name='sort'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
