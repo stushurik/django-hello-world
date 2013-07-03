@@ -14,10 +14,10 @@ class UserProfile(models.Model):
     birthday = models.DateField(default=now())
     bio = models.TextField(blank=True)
     contacts = models.CharField(blank=True, max_length=255)
-    jabber = models.TextField(blank=True)
-    skype = models.TextField(blank=True)
+    jabber = models.CharField(blank=True, max_length=255)
+    skype = models.CharField(blank=True, max_length=255)
     other = models.TextField(blank=True)
-    avatar = models.ImageField(upload_to=make_upload_path, null=True)
+    avatar = models.ImageField(upload_to=make_upload_path, null=True, blank=True)
 
     def __unicode__(self):
         return self.user.email
@@ -43,4 +43,3 @@ class WebRequest(models.Model):
 
     def __unicode__(self):
         return "%s - %s" % (self.time, self.host)
-

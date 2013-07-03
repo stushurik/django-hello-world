@@ -5,4 +5,3 @@ from django_hello_world.hello.models import UserProfile, WebRequest, ModelsOpera
 
 admin.site.register(UserProfile)
 admin.site.register(WebRequest)
-admin.site.register(ModelsOperation)
