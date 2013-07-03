@@ -22,14 +22,16 @@
         </tr>
     </thead>
     <tbody>
-        {% for request in object_list %}
+        {% for request in object_list|slice:":10" %}
             {% if forloop.counter|divisibleby:"2" %}
                 <tr class="info">
                     {% else %}
                 <tr class="success">
             {% endif %}
                 <td>{{ forloop.counter }}</td>
-                <td><select type="text" id="{{ request.id }}"  class="priority">
+                <td>
+                    {% if user.is_authenticated %}
+                    <select type="text" id="{{ request.id }}"  class="priority">
                         <option selected>{{ request.priority }}</option>
                         {% if  request.priority%}
                             <option>0</option>
@@ -37,6 +39,9 @@
                             <option>1</option>
                         {% endif %}
                     </select>
+                    {% else %}
+                        {{ request.priority }}
+                    {% endif %}
                 </td>
                 <td>{{ request.time|date:"Y-m-d H:i:s.u" }}</td>
                 <td>{{ request.host }}</td>
