@@ -214,22 +214,17 @@ class ContextTestCase(TestCase):
         self.assertEqual(response.context['settings'], settings)
 
 
-class ManagementCommandTestCase(unittest.TestCase):
+class ManagementCommandTestCase(TestCase):
     def test_command(self):
-        out, err = '', ''
-        for ct in ContentType.objects.all():
-            m = ct.model_class()
-            message = (m.__module__,
-                       m.__name__,
-                       m._default_manager.count()
-                       )
-            out += "%s.%s\t%d\n" % message
-            err += "error:%s.%s\t%d\n" % message
-
+        for i in range(0, 2):
+            self.client.get(reverse('home'))
+            User.objects.create(username=i)
         stdout, stderr = sys.stdout, sys.stderr
         sys.stdout = c1 = StringIO()
         sys.stderr = c2 = StringIO()
         call_command('count_objects')
-        self.assertEqual(c1.getvalue(), out)
-        self.assertEqual(c2.getvalue(), err)
+        self.assertTrue ('django_hello_world.hello.models.WebRequest\t2' in c1.getvalue())
+        self.assertTrue ('error:django_hello_world.hello.models.WebRequest\t2' in c2.getvalue())
+        self.assertTrue ('django.contrib.auth.models.User\t3' in c1.getvalue())
+        self.assertTrue ('error:django.contrib.auth.models.User\t3' in c2.getvalue())
         sys.stdout, sys.stderr = stdout, stderr
