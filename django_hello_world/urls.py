@@ -3,18 +3,24 @@ from django.conf.urls import patterns, include, url
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 from django_hello_world import settings
-from django_hello_world.hello.views import IndexView, ListRequestView, AuthenticationView, UserDataUpdate, UploadFile, DeleteFile, SaveProfile
+from django_hello_world.hello.views import IndexView, ListRequestView, AuthenticationView, \
+    UploadFile, DeleteFile, SaveProfile, LoginFormView, UserDataFormView, LogoutView
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^login/$', AuthenticationView.as_view(), name='login'),
-    url(r'^profile/$', UserDataUpdate.as_view(), name='profile'),
+
+    url(r'^login/$', LoginFormView.as_view(), name='login'),
+    url(r'^login/confirm/$', AuthenticationView.as_view(), name='confirm'),
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
+
+    url(r'^profile/$', UserDataFormView.as_view(), name='profile'),
     url(r'^profile/upload_file/$', UploadFile.as_view(), name='upload_file'),
     url(r'^profile/delete_file/$', DeleteFile.as_view(), name='delete_file'),
     url(r'^profile/save_profile/$',SaveProfile.as_view(), name='save_profile'),
+
     # url(r'^django_hello_world/', include('django_hello_world.foo.urls')),
     url(r'^requests/$', ListRequestView.as_view(), name='requests'),
     # Uncomment the admin/doc line below to enable admin documentation:

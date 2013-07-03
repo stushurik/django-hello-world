@@ -31,7 +31,7 @@
                     <tr class="success">
                 {% endif %}
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ request.time }}</td>
+                    <td>{{ request.time|date:"Y-m-d H:i:s.u" }}</td>
                     <td>{{ request.host }}</td>
                     <td>{{ request.path}}</td>
                     <td>{{ request.method }}</td>
