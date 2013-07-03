@@ -20,7 +20,9 @@ def get_profile(user):
 def edit_link(obj):
     change_url = ''
     obj_id = getattr(obj, 'id', None)
-    url = 'admin:hello_%s_change' % type(obj).__name__.lower()
+    app_label = obj.__module__.split('.')[-2]
+    model_name = type(obj).__name__.lower()
+    url = 'admin:%s_%s_change' %(app_label, model_name)
     try:
         change_url = urlresolvers.reverse(url, args=(obj_id, ))
     except NoReverseMatch:
