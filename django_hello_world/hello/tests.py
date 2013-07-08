@@ -8,6 +8,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -96,10 +97,6 @@ class HttpTest(TestCase):
         response = self.client.post(reverse('change_priority'), {'value': "100"})
         self.assertContains(response, json.dumps(response_data_v4))
 
-        # for i in range(0, 5):
-        #     self.client.cookies['request_number'] = i
-        #     self.client.get(reverse('home'))
-
         response = self.client.post(reverse('sort'),
                                     {'id': "time",
                                      'type': "asc",
@@ -113,9 +110,35 @@ class HttpTest(TestCase):
             self.assertContains(response, request.time)
 
     def test_login(self):
-        response = self.client.post(reverse('profile'), {'username': "admin", 'pass': "2"})
+        response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "2"})
+        self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('login'))
-        response = self.client.post(reverse('profile'), {'username': "admin", 'pass': "1"})
+        response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "1"})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('home'))
+        self.client.logout()
+
+    def test_redirect(self):
+        response = self.client.get(reverse('profile'))
+        self.assertRedirects(response, reverse('login'))
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_hello_message(self):
+        self.client.login(username="admin", password="1")
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, "Hello, <strong>admin</strong> !")
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_logout_link(self):
+        self.client.login(username="admin", password="1")
+        response = self.client.get(reverse('profile'))
+        self.assertContains(response, "Logout")
+
+    def test_edit_page_content(self):
+        self.client.login(username="admin", password="1")
+        response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Olexandr")
         self.assertContains(response, "Poplavskyi")
@@ -127,24 +150,43 @@ class HttpTest(TestCase):
         self.assertContains(response, "shurik.poplavskyi")
         self.assertContains(response, "-")
 
-    def test_save(self):
+    def test_data_edit_view(self):
         response_data = {'success': False,
                          'message': "Error while saving data!"
                          }
         response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
         self.assertContains(response, json.dumps(response_data))
+        admin = User.objects.get(username='admin')
+        self.client.login(username="admin", password="1")
+        self.client.post(reverse('save_profile'),
+                         {'first_name': 'Test',
+                          'last_name': 'Test',
+                          'email': 'test@test.com',
+                          'birthday': '2092-12-12',
+                          'bio': 'test',
+                          'other': 'test',
+                          'skype': 'test',
+                          'jabber': 'test',
+                          'contacts': 'test',
+                          }
+                         )
 
-    def test_admin_page(self):
-        self.client.login(username='admin', password='1')
-        response = self.client.get('/admin/auth/user/1/')
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get('/admin/auth/user/100/')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(1, len(User.objects.filter(first_name='Test',
+                                                    last_name='Test',
+                                                    email='test@test.com'
+                                                    )
+                                )
+                         )
+        test_user = User.objects.get(first_name='Test',
+                                     last_name='Test',
+                                     email='test@test.com'
+                                     )
+        self.assertEqual(admin.id, test_user.id)
 
 
 class WebRequestMiddlewareTest(TestCase):
 
-    def test_requests(self):
+    def test_saving_one_request(self):
         self.client.get(reverse('home'),
                         PATH=reverse('home'),
                         HTTP_USER_AGENT='Mozilla/5.0'
@@ -154,6 +196,52 @@ class WebRequestMiddlewareTest(TestCase):
                                             method='GET'
                                             )
         self.assertEqual(len(request), 1)
+
+    def test_only_first_ten_requests(self):
+        for i in range(0, 10):
+            self.client.cookies['request_number'] = i
+            self.client.get(reverse('home'))
+        for i in range(10, 20):
+            self.client.cookies['request_number'] = i
+            self.client.post(reverse('requests'), PATH=reverse('requests'))
+
+        request_list = WebRequest.objects.all()[:10]
+        params = {"start": "0", "end": "0"}
+        response = self.client.post(reverse('requests_list'),params)
+        for request in request_list:
+            self.assertContains(response, request.time)
+            self.assertEqual(request.method, 'GET')
+            self.assertEqual(request.path, reverse('home'))
+
+        #Last 20 request not in rendered page
+        request_list = WebRequest.objects.all()[10:20]
+        response = self.client.post(reverse('requests_list'),params)
+        for request in request_list:
+            self.assertNotContains(response, request.time)
+            self.assertEqual(request.method, 'POST')
+            self.assertEqual(request.path, reverse('requests'))
+
+    def test_pass_params_get(self):
+        params = {"test1": "str"}
+        self.client.get(reverse('requests'),
+                        params,
+                        )
+        request = WebRequest.objects.latest('time')
+        self.assertEqual(request.path, reverse('requests'))
+        self.assertEqual(request.get, json.dumps(params))
+
+    def test_pass_params_post(self):
+        params = {"test1": "str"}
+        self.client.post('/admin/',
+                         params,
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+                         )
+
+        request = WebRequest.objects.latest('time')
+        self.assertEqual(request.path, '/admin/')
+        self.assertEqual(request.method, 'POST')
+        self.assertEqual(request.is_ajax, True)
+        self.assertEqual(request.post, json.dumps(params))
 
 
 class ContextTestCase(TestCase):
