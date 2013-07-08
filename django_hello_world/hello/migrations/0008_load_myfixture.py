@@ -9,6 +9,8 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+        from django.core.management import call_command
+        call_command("loaddata", "hello_fixture.json")
 
     def backwards(self, orm):
         "Write your backwards methods here."
@@ -50,15 +52,23 @@ class Migration(DataMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'hello.modelsoperation': {
+            'Meta': {'object_name': 'ModelsOperation'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'model_class': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
+            'operation': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 7, 8, 0, 0)'})
+        },
         'hello.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
+            'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'bio': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 6, 23, 0, 0)'}),
+            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 7, 8, 0, 0)'}),
             'contacts': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'jabber': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'jabber': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'other': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'skype': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'skype': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         },
         'hello.webrequest': {
@@ -73,6 +83,7 @@ class Migration(DataMigration):
             'method': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'path': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
             'post': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'priority': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'raw_post': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'remote_addr': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
             'remote_addr_fwd': ('django.db.models.fields.IPAddressField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),

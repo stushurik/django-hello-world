@@ -113,7 +113,7 @@ class HttpTest(TestCase):
         response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "2"})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('login'))
-        response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "1"})
+        response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "admin"})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('home'))
         self.client.logout()
@@ -125,19 +125,19 @@ class HttpTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_hello_message(self):
-        self.client.login(username="admin", password="1")
+        self.client.login(username="admin", password="admin")
         response = self.client.get(reverse('home'))
         self.assertContains(response, "Hello, <strong>admin</strong> !")
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
 
     def test_logout_link(self):
-        self.client.login(username="admin", password="1")
+        self.client.login(username="admin", password="admin")
         response = self.client.get(reverse('profile'))
         self.assertContains(response, "Logout")
 
     def test_edit_page_content(self):
-        self.client.login(username="admin", password="1")
+        self.client.login(username="admin", password="admin")
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Olexandr")
@@ -157,7 +157,7 @@ class HttpTest(TestCase):
         response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
         self.assertContains(response, json.dumps(response_data))
         admin = User.objects.get(username='admin')
-        self.client.login(username="admin", password="1")
+        self.client.login(username="admin", password="admin")
         self.client.post(reverse('save_profile'),
                          {'first_name': 'Test',
                           'last_name': 'Test',
