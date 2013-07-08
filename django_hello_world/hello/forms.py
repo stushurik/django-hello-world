@@ -1,16 +1,22 @@
-from django.forms import Form, CharField, EmailField, DateField, Textarea, FileField
+from django.contrib.auth.models import User
+from django.forms import ModelForm
 
+
+from django_hello_world.hello.models import UserProfile
 from django_hello_world.hello.widgets import CalendarWidget
 
 
-class ContactForm(Form):
-    first_name = CharField(max_length=255, label="Name")
-    last_name = CharField(max_length=255, label="Last name")
-    email = EmailField(label="Email")
-    birthday = DateField(widget=CalendarWidget, label="Date of birth")
-    bio = CharField(widget=Textarea, label="Bio")
-    contacts = CharField(max_length=255, label="Contacts")
-    skype = CharField(max_length=255, label="Contacts")
-    jabber = CharField(max_length=255, label="Jabber")
-    other = CharField(widget=Textarea, label="Other")
-    uploaded_file = FileField()
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        exclude = ('user', )
+        widgets = {
+            'birthday': CalendarWidget(),
+        }
+
