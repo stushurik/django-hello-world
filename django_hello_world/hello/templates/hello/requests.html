@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-     <form action="/requests/list/" method="POST" id="list_param_form">
+     <form action="{% url requests_list %}" method="POST" id="list_param_form">
         {% csrf_token %}
          From
         <select type="text" name="start" id="start">

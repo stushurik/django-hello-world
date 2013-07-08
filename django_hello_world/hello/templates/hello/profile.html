@@ -12,7 +12,7 @@
 {% block content %}
 
         {% if not home %}
-            <form action="/profile/save_profile/" method="POST" id="user_data_form">
+            <form action="{% url save_profile %}" method="POST" id="user_data_form">
 
             {% csrf_token %}
         {% endif %}
@@ -106,7 +106,7 @@
                 </table>
         {% if not home %}
             <input type="submit" class="btn btn-large btn btn-success">
-            <a href="/">Cancel</a>
+            <a href="{% url home %}">Cancel</a>
         </form>
 
         <div id='loader'>
