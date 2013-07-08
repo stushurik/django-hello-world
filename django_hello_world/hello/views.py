@@ -75,6 +75,7 @@ class LogoutView(View):
         logout(request)
         return HttpResponseRedirect(reverse('home'))
 
+
 class ChangePriority(View):
     def post(self, request, *args, **kwargs):
         response_data = {'success': False,

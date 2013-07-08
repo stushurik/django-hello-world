@@ -207,7 +207,7 @@ class WebRequestMiddlewareTest(TestCase):
 
         request_list = WebRequest.objects.all()[:10]
         params = {"start": "0", "end": "0"}
-        response = self.client.post(reverse('requests_list'),params)
+        response = self.client.post(reverse('requests_list'), params)
         for request in request_list:
             self.assertContains(response, request.time)
             self.assertEqual(request.method, 'GET')
@@ -215,7 +215,7 @@ class WebRequestMiddlewareTest(TestCase):
 
         #Last 20 request not in rendered page
         request_list = WebRequest.objects.all()[10:20]
-        response = self.client.post(reverse('requests_list'),params)
+        response = self.client.post(reverse('requests_list'), params)
         for request in request_list:
             self.assertNotContains(response, request.time)
             self.assertEqual(request.method, 'POST')

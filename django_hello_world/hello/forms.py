@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 
-
 from django_hello_world.hello.models import UserProfile
 from django_hello_world.hello.widgets import CalendarWidget
 
@@ -19,4 +18,3 @@ class UserProfileForm(ModelForm):
         widgets = {
             'birthday': CalendarWidget(),
         }
-
