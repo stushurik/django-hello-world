@@ -1,56 +1,48 @@
 import json
 import os
-from django.contrib.auth import authenticate, login, get_user
+
+from django.contrib.auth import authenticate, login, get_user, logout
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.views.generic import TemplateView, ListView, FormView, View
+from django.views.generic import TemplateView, ListView, View
 from django_hello_world import settings
 
-from django_hello_world.hello.forms import ContactForm
+from django_hello_world.hello.forms import UserForm, UserProfileForm
 from django_hello_world.hello.models import WebRequest, UserProfile
 
 
-def set_user_data(dct, user):
-    dct.update({'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
-                'birthday': user.userprofile.birthday if user.userprofile else None,
-                'bio': user.userprofile.bio if user.userprofile else None,
-                'other': user.userprofile.other if user.userprofile else None,
-                'skype': user.userprofile.skype if user.userprofile else None,
-                'jabber': user.userprofile.jabber if user.userprofile else None,
-                'contacts': user.userprofile.contacts if user.userprofile else None,
-                }
-               )
+class DetailFormView(TemplateView):
 
-
-class DetailFormView(FormView):
     template_name = 'hello/profile.html'
-    form_class = ContactForm
-    user_data = {}
 
-    def get_form(self, form_class):
-        return form_class(self.user_data)
+    def __init__(self):
+        TemplateView.__init__(self)
+        self.user_form, self.user_profile_form = None, None
 
     def get_context_data(self, **kwargs):
         context = super(DetailFormView, self).get_context_data(**kwargs)
-        context['host'] = self.request.get_host()
+        context['request'] = self.request
+        context['user_form'] = self.user_form
+        context['user_profile_form'] = self.user_profile_form
         return context
+
+    def set_forms_data(self, user):
+            self.user_form = UserForm(instance=user)
+            self.user_profile_form = UserProfileForm(instance=user.userprofile)
 
 
 class IndexView(DetailFormView):
     def get(self, request, *args, **kwargs):
         try:
-            self.user = User.objects.get(email=u"stu.shurik@gmail.com")
-            set_user_data(self.user_data, self.user)
+            user = User.objects.get(email=u"stu.shurik@gmail.com")
+            self.set_forms_data(user)
         except:
             pass
         return super(IndexView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['requested_user'] = self.user
         context['home'] = True
         return context
 
@@ -58,19 +50,30 @@ class IndexView(DetailFormView):
 class RequestView(TemplateView):
     template_name = 'hello/requests.html'
 
+
 class RequestListView(ListView):
     template_name = 'hello/request_list.html'
 
     def post(self, request, *args, **kwargs):
         try:
-            start = int(request.POST.get('start', 2))
-            end = int(request.POST.get('end', 2))
+            start = int(request.POST.get('start', 0))
+            end = int(request.POST.get('end', 0))
         except:
             return HttpResponse("Please enter integer value of priority!")
         self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by('priority')
         self.object_list = self.get_queryset()
         context = self.get_context_data(object_list=self.object_list)
         return self.render_to_response(context)
+
+
+class LoginFormView(TemplateView):
+    template_name = 'hello/login.html'
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponseRedirect(reverse('home'))
 
 class ChangePriority(View):
     def post(self, request, *args, **kwargs):
@@ -96,34 +99,45 @@ class ChangePriority(View):
         return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
 
-class AuthenticationView(TemplateView):
-    template_name = 'hello/login.html'
+class Sort(ListView):
+    template_name = 'hello/request_list.html'
+
+    def post(self, request, *args, **kwargs):
+        field = str(request.POST.get('id'))
+        sort_order = request.POST.get('type')
+        try:
+            start = int(request.POST.get('start', 0))
+            end = int(request.POST.get('end', 0))
+        except:
+            return HttpResponse("Please enter integer value of priority!")
+        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by("-" + field if sort_order == 'asc' else field)
+        self.object_list = self.get_queryset()
+        context = self.get_context_data(object_list=self.object_list)
+        context['order_' + field] = "desc" if sort_order == 'asc' else 'asc'
+        return self.render_to_response(context)
 
 
-class UserDataUpdate(DetailFormView):
-
-    def get(self, request, *args, **kwargs):
-        if get_user(request).is_authenticated():
-            set_user_data(self.user_data, get_user(request))
-            return super(UserDataUpdate, self).get(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
+class AuthenticationView(View):
 
     def post(self, request, *args, **kwargs):
         username = request.POST['username']
         password = request.POST['pass']
 
         auth_user = authenticate(username=username, password=password)
-        if auth_user is not None and auth_user.is_active:
+        if auth_user is not None:
             login(request, auth_user)
-            set_user_data(self.user_data, auth_user)
-            return super(UserDataUpdate, self).post(request, *args, **kwargs)
+            return HttpResponseRedirect(reverse('home'))
         else:
             return HttpResponseRedirect(reverse('login'))
 
-    def get_context_data(self, **kwargs):
-        context = super(UserDataUpdate, self).get_context_data(**kwargs)
-        context['requested_user'] = self.request.user
-        return context
+
+class UserDataFormView(DetailFormView):
+
+    def get(self, request, *args, **kwargs):
+        if get_user(request).is_authenticated():
+            self.set_forms_data(get_user(request))
+            return super(UserDataFormView, self).get(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
 
 
 class UploadFile(View):
@@ -164,18 +178,16 @@ class SaveProfile(View):
         response_data = {'success': True,
                          'message': "Data was successful saved!"
                          }
+
+        def save(obj):
+            getattr(obj, 'save')()
+
         try:
-            request.user.first_name = request.POST['first_name']
-            request.user.last_name = request.POST['last_name']
-            request.user.save()
-            request.user.userprofile.birthday = request.POST['birth']
-            request.user.userprofile.bio = request.POST['bio']
-            request.user.userprofile.contacts = request.POST['contacts']
-            request.user.userprofile.skype = request.POST['skype']
-            request.user.userprofile.jabber = request.POST['jabber']
-            request.user.userprofile.other = request.POST['other']
-            request.user.userprofile.email = request.POST['email']
-            request.user.userprofile.save()
+            user = get_user(request)
+            user_form = UserForm(instance=user, data=request.POST)
+            user_profile_form = UserProfileForm(instance=user.userprofile, data=request.POST)
+            for instance in (user_form, user_profile_form):
+                save(instance)
         except:
             response_data['success'] = False
             response_data['message'] = "Error while saving data!"

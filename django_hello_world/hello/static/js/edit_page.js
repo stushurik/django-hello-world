@@ -24,9 +24,9 @@ $(document).ready(function() {
         $('#user_data_form').find('input, textarea, button').attr('disabled','disabled');
         return false;
      });
-    $('#id_uploaded_file').change(function(){
+    $('#id_avatar').change(function(){
         var data = new FormData();
-        $.each($('#id_uploaded_file')[0].files, function(i, file) {
+        $.each($('#id_avatar')[0].files, function(i, file) {
                 data.append('uploaded_file', file);
         });
 

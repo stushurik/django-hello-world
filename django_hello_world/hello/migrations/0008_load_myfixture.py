@@ -1,28 +1,19 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Adding model 'UserProfile'
-        db.create_table('hello_userprofile', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('birthdate', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2013, 6, 21, 0, 0))),
-            ('bio', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('contacts', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-        ))
-        db.send_create_signal('hello', ['UserProfile'])
-
+        "Write your forwards methods here."
+        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+        from django.core.management import call_command
+        call_command("loaddata", "hello_fixture.json")
 
     def backwards(self, orm):
-        # Deleting model 'UserProfile'
-        db.delete_table('hello_userprofile')
-
+        "Write your backwards methods here."
 
     models = {
         'auth.group': {
@@ -61,14 +52,47 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'hello.modelsoperation': {
+            'Meta': {'object_name': 'ModelsOperation'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'model_class': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
+            'operation': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 7, 8, 0, 0)'})
+        },
         'hello.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
+            'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'bio': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'birthdate': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 6, 21, 0, 0)'}),
+            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 7, 8, 0, 0)'}),
             'contacts': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'jabber': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'other': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'skype': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
+        },
+        'hello.webrequest': {
+            'Meta': {'object_name': 'WebRequest'},
+            'cookies': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'get': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'host': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_ajax': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_secure': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'meta': ('django.db.models.fields.TextField', [], {}),
+            'method': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'path': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
+            'post': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'priority': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
+            'raw_post': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'remote_addr': ('django.db.models.fields.IPAddressField', [], {'max_length': '15'}),
+            'remote_addr_fwd': ('django.db.models.fields.IPAddressField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'uri': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
+            'user_agent': ('django.db.models.fields.CharField', [], {'max_length': '1000', 'null': 'True', 'blank': 'True'})
         }
     }
 
     complete_apps = ['hello']
+    symmetrical = True

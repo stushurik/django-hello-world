@@ -1,17 +1,27 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+
+        # Changing field 'UserProfile.skype'
+        db.alter_column('hello_userprofile', 'skype', self.gf('django.db.models.fields.CharField')(max_length=255))
+
+        # Changing field 'UserProfile.jabber'
+        db.alter_column('hello_userprofile', 'jabber', self.gf('django.db.models.fields.CharField')(max_length=255))
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+
+        # Changing field 'UserProfile.skype'
+        db.alter_column('hello_userprofile', 'skype', self.gf('django.db.models.fields.TextField')())
+
+        # Changing field 'UserProfile.jabber'
+        db.alter_column('hello_userprofile', 'jabber', self.gf('django.db.models.fields.TextField')())
 
     models = {
         'auth.group': {
@@ -50,15 +60,23 @@ class Migration(DataMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'hello.modelsoperation': {
+            'Meta': {'object_name': 'ModelsOperation'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'model_class': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
+            'operation': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'time': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 7, 3, 0, 0)'})
+        },
         'hello.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
+            'avatar': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'bio': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 6, 23, 0, 0)'}),
+            'birthday': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2013, 7, 3, 0, 0)'}),
             'contacts': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'jabber': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'jabber': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'other': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'skype': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'skype': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         },
         'hello.webrequest': {
@@ -84,4 +102,3 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['hello']
-    symmetrical = True
