@@ -258,7 +258,11 @@ class TemplateTagTest(TestCase):
     def test_tag(self):
         admin = User.objects.get(pk=1)
         link = edit_link(admin)
-        self.assertEqual(link,"/admin/auth/user/1/")
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(link)
+        self.assertContains(response, admin.username)
+        self.assertContains(response, admin.first_name)
+        self.assertContains(response, admin.last_name)
 
 
 class ManagementCommandTestCase(TestCase):

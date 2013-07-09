@@ -1,4 +1,15 @@
 $(document).ready(function() {
+    function readURL(input,selector) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $(selector).attr('src', e.target.result);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
     var options = {
         beforeSubmit:function () {
                 $("#loader").css("display", "block");
@@ -29,31 +40,11 @@ $(document).ready(function() {
         $.each($('#id_avatar')[0].files, function(i, file) {
                 data.append('uploaded_file', file);
         });
-
-        data.append('csrfmiddlewaretoken',document.getElementsByName('csrfmiddlewaretoken')[0].value);
-
-        $.ajax({
-            url: '/profile/upload_file/',
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: 'POST',
-            success: function(data){
-                $('.img-polaroid').attr('src',data);
-            }
-        });
+        readURL(this,'.img-polaroid');
     });
 
     $('#close').click(function(){
-        $.ajax({
-            type: 'POST',
-            url: '/profile/delete_file/',
-            data:{ csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value},
-            success: function(data){
-                $('#id_uploaded_file').val('');
-                $('.img-polaroid').attr('src',data);
-            }
-        });
+        $('#user_data_form').append("<input type='hidden' name='del' value=True />");
+        $('.img-polaroid').attr('src', '/static/img/default.png');
     });
 });

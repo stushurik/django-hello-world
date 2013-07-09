@@ -9,7 +9,7 @@ def callback_save(sender, **kwargs):
     post_save.disconnect(callback_save)
     try:
         mo = ModelsOperation()
-        mo.model_class = kwargs['instance'].__class__.__name__
+        mo.model_class = sender.__name__
         if kwargs['created']:
             mo.operation = 'Creation'
         else:
@@ -25,7 +25,7 @@ def callback_delete(sender, **kwargs):
     post_delete.disconnect(callback_delete)
     try:
         mo = ModelsOperation()
-        mo.model_class = kwargs['instance'].__class__.__name__
+        mo.model_class = sender.__name__
         mo.operation = 'Deletion'
         mo.save()
     except:
