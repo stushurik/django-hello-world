@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from django_hello_world.hello.models import WebRequest
+from django_hello_world.hello.templatetags.extended_tags import edit_link
 
 
 class SimpleTest(TestCase):
@@ -207,3 +208,10 @@ class ContextTestCase(TestCase):
         response = self.client.get(reverse('home'))
         self.assertTrue('settings' in response.context)
         self.assertEqual(response.context['settings'], settings)
+
+
+class TemplateTagTest(TestCase):
+    def test_tag(self):
+        admin = User.objects.get(pk=1)
+        link = edit_link(admin)
+        self.assertEqual(link,"/admin/auth/user/1/")
