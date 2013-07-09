@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import NoReverseMatch
 from django.contrib.auth.models import User
 from django import template
@@ -20,8 +21,9 @@ def get_profile(user):
 def edit_link(obj):
     change_url = ''
     obj_id = getattr(obj, 'id', None)
-    app_label = obj.__module__.split('.')[-2]
-    model_name = type(obj).__name__.lower()
+    obj_type = ContentType.objects.get_for_model(obj)
+    app_label = obj_type.app_label
+    model_name = obj_type.model
     url = 'admin:%s_%s_change' %(app_label, model_name)
     try:
         change_url = urlresolvers.reverse(url, args=(obj_id, ))
