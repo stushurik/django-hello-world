@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block extra %}
-    <script src="/static/js/jquery-1.9.1.min.js"></script>
-    <script src="/static/js/jquery.form.js"></script>
-    <script src="/static/js/requests_page.js"></script>
+    <script src="{{ settings.JS }}jquery-1.9.1.min.js"></script>
+    <script src="{{ settings.JS }}jquery.form.js"></script>
+    <script src="{{ settings.JS }}requests_page.js"></script>
 {% endblock %}
 
 {% block content %}

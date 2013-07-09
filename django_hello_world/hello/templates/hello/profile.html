@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block extra %}
-    <script src="/static/js/jquery-1.9.1.min.js"></script>
-    <script src="/static/js/jquery.form.js"></script>
+    <script src="{{ settings.JS }}jquery-1.9.1.min.js"></script>
+    <script src="{{ settings.JS }}jquery.form.js"></script>
     {{ user_profile_form.media }}
     {% if not home %}
-        <script src="/static/js/edit_page.js"></script>
+        <script src="{{ settings.JS }}edit_page.js"></script>
     {% endif %}
 {% endblock %}
 
@@ -69,10 +69,10 @@
                         <td rowspan="3" id="avatar_cell">
                             Photo:
                             <div id="avatar">
-                                <img src="{% if profile.avatar %}{{ profile.avatar.path }}{% else %}/static/img/default.png{% endif %}"
+                                <img src="{% if profile.avatar %}{{ profile.avatar.path }}{% else %}{{ settings.IMG }}default.png{% endif %}"
                                 width="300px" height="1000px" class="img-polaroid">
                                 {% if not home %}
-                                    <img src="/static/img/close.png" id="close" width="20px" height="20px" id="close">
+                                    <img src="{{ settings.IMG }}close.png" id="close" width="20px" height="20px" id="close">
                                     {{ user_profile_form.avatar }}
                                 {% endif %}
                             </div>
@@ -111,7 +111,7 @@
 
         <div id='loader'>
             Loading... please wait
-            <img src="static/img/spinner.gif"/>
+            <img src="{{ settings.IMG }}spinner.gif"/>
         </div>
     {% endif %}
     <div class="alert hide" id="message">

@@ -167,3 +167,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
 FIXTURE_DIRS = (
    os.path.join(PROJECT_PATH, 'hello/fixtures'),
 )
+
+CSS = "%scss/" % STATIC_URL
+JS = "%sjs/" % STATIC_URL
+IMG = "%simg/" % MEDIA_URL
