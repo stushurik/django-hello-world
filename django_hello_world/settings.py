@@ -170,4 +170,5 @@ FIXTURE_DIRS = (
 
 CSS = "%scss/" % STATIC_URL
 JS = "%sjs/" % STATIC_URL
-IMG = "%simg/" % MEDIA_URL
+STATIC_IMG = "%simg/" % STATIC_URL
+USER_IMG = "%simg/" % MEDIA_URL
