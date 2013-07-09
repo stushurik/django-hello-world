@@ -270,10 +270,10 @@ class ManagementCommandTestCase(TestCase):
         sys.stdout = c1 = StringIO()
         sys.stderr = c2 = StringIO()
         call_command('count_objects')
-        self.assertTrue ('django_hello_world.hello.models.WebRequest\t2' in c1.getvalue())
-        self.assertTrue ('error:django_hello_world.hello.models.WebRequest\t2' in c2.getvalue())
-        self.assertTrue ('django.contrib.auth.models.User\t3' in c1.getvalue())
-        self.assertTrue ('error:django.contrib.auth.models.User\t3' in c2.getvalue())
+        self.assertTrue('WebRequest\t2' in c1.getvalue())
+        self.assertTrue('error:WebRequest\t2' in c2.getvalue())
+        self.assertTrue('User\t3' in c1.getvalue())
+        self.assertTrue('error:User\t3' in c2.getvalue())
         sys.stdout, sys.stderr = stdout, stderr
 
 

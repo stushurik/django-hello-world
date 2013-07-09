@@ -4,8 +4,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django_hello_world import settings
 from django_hello_world.hello.views import IndexView, LoginFormView, \
-    AuthenticationView, LogoutView, UserDataFormView, UploadFile, DeleteFile, \
-    SaveProfile, RequestView, RequestListView, ChangePriority, Sort
+    AuthenticationView, LogoutView, UserDataFormView, SaveProfile, RequestView, \
+    RequestListView, ChangePriority, Sort
 
 admin.autodiscover()
 
@@ -18,8 +18,6 @@ urlpatterns = patterns('',
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
 
     url(r'^profile/$', UserDataFormView.as_view(), name='profile'),
-    url(r'^profile/upload_file/$', UploadFile.as_view(), name='upload_file'),
-    url(r'^profile/delete_file/$', DeleteFile.as_view(), name='delete_file'),
     url(r'^profile/save_profile/$',SaveProfile.as_view(), name='save_profile'),
     # url(r'^django_hello_world/', include('django_hello_world.foo.urls')),
 

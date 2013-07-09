@@ -1,11 +1,14 @@
 import json
 import os
+import traceback
+import PIL
 
 from django.contrib.auth import authenticate, login, get_user, logout
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView, ListView, View
+import sys
 from django_hello_world import settings
 
 from django_hello_world.hello.forms import UserForm, UserProfileForm
@@ -141,39 +144,6 @@ class UserDataFormView(DetailFormView):
         return HttpResponseRedirect(reverse('login'))
 
 
-class UploadFile(View):
-    def post(self, request, *args, **kwargs):
-        if request.FILES:
-            user = UserProfile.objects.get(user=request.user)
-            uploaded_file = request.FILES['uploaded_file']
-            try:
-                os.remove(user.avatar.path)
-            except ValueError:
-                pass
-            path = os.path.join(settings.MEDIA_ROOT, 'img/%s' % uploaded_file)
-            with open(path, 'wb+') as destination:
-                for chunk in uploaded_file.chunks():
-                    destination.write(chunk)
-                user.avatar = uploaded_file
-            user.save()
-            os.remove(path)
-            return HttpResponse("%s" % user.avatar.path)
-        else:
-            return HttpResponse("/static/img/default.png")
-
-
-class DeleteFile(View):
-    def post(self, request, *args, **kwargs):
-        user = UserProfile.objects.get(user=request.user)
-        try:
-            os.remove(user.avatar.path)
-            user.avatar.name = ''
-            user.save()
-        except ValueError:
-            pass
-        return HttpResponse("/static/img/default.png")
-
-
 class SaveProfile(View):
     def post(self, request, *args, **kwargs):
         response_data = {'success': True,
@@ -186,10 +156,20 @@ class SaveProfile(View):
         try:
             user = get_user(request)
             user_form = UserForm(instance=user, data=request.POST)
-            user_profile_form = UserProfileForm(instance=user.userprofile, data=request.POST)
-            for instance in (user_form, user_profile_form):
-                save(instance)
-        except:
+
+            if request.FILES or request.POST.get('del', None):
+                try:
+                    os.remove(user.userprofile.avatar.path)
+                    user.userprofile.avatar.name = ''
+                except :
+                    pass
+
+            user_profile_form = UserProfileForm(request.POST, request.FILES, instance=user.userprofile)
+
+            if user_profile_form.is_valid() and user_form.is_valid():
+                for instance in (user_form, user_profile_form):
+                    save(instance)
+        except :
             response_data['success'] = False
             response_data['message'] = "Error while saving data!"
         return HttpResponse(json.dumps(response_data), mimetype="application/json")

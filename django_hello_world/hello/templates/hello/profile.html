@@ -4,14 +4,14 @@
 {% block extra %}
     {{ user_profile_form.media }}
     {% if not home %}
-        <script src="{% static "js/}edit_page.js"%}"></script>
+        <script src="{% static "js/edit_page.js" %}"></script>
     {% endif %}
 {% endblock %}
 
 {% block content %}
 
         {% if not home %}
-            <form action="{% url save_profile %}" method="POST" id="user_data_form">
+            <form enctype="multipart/form-data" action="{% url save_profile %}" method="POST" id="user_data_form" >
 
             {% csrf_token %}
         {% endif %}

@@ -6,7 +6,7 @@ from django.db import models
 
 
 def make_upload_path(instance, filename):
-    return u"img/%s_%s" % (now(), filename)
+    return u"img/%s" %  filename
 
 
 class UserProfile(models.Model):
