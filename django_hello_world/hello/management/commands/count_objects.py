@@ -11,12 +11,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for ct in ContentType.objects.all():
-            m = ct.model_class()
-            print "%s.%s\t%d" % (m.__module__,
-                                 m.__name__,
-                                 m._default_manager.count()
-                                 )
-            print >> stderr, "error:%s.%s\t%d" % (m.__module__,
-                                                  m.__name__,
-                                                  m._default_manager.count()
-                                                  )
+            try:
+                m = ct.model_class()
+                message = (m.__module__,
+                           m.__name__,
+                           m._default_manager.count()
+                           )
+                print "%s.%s\t%d" % message
+                print >> stderr, "error:%s.%s\t%d" % message
+            except:
+                pass

@@ -4,15 +4,20 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+from StringIO import StringIO
 import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.core.management import call_command
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+import sys
+from django.utils import unittest
 
-from django_hello_world.hello.models import WebRequest, ModelsOperation
+from django_hello_world.hello.models import WebRequest
 
 
 class SimpleTest(TestCase):
@@ -251,39 +256,17 @@ class ContextTestCase(TestCase):
         self.assertEqual(response.context['settings'], settings)
 
 
-class SignalProcessorTestCase(TestCase):
-    def test_signal(self):
-        number_of_operation = len(ModelsOperation.objects.filter(operation='Creation',
-                                                                 model_class='User'
-                                                                 )
-                                  )
-        user = User.objects.create(username='test_signal')
-        self.assertEqual(number_of_operation + 1,
-                         len(ModelsOperation.objects.filter(operation='Creation',
-                                                            model_class='User'
-                                                            )
-                             )
-                         )
-        number_of_operation = len(ModelsOperation.objects.filter(operation='Editing',
-                                                                 model_class='User'
-                                                                 )
-                                  )
-        user.username = 'test_signal_edit'
-        user.save()
-        self.assertEqual(number_of_operation + 1,
-                         len(ModelsOperation.objects.filter(operation='Editing',
-                                                            model_class='User'
-                                                            )
-                             )
-                         )
-        number_of_operation = len(ModelsOperation.objects.filter(operation='Deletion',
-                                                                 model_class='User'
-                                                                 )
-                                  )
-        user.delete()
-        self.assertEqual(number_of_operation + 1,
-                         len(ModelsOperation.objects.filter(operation='Deletion',
-                                                            model_class='User'
-                                                            )
-                             )
-                         )
+class ManagementCommandTestCase(TestCase):
+    def test_command(self):
+        for i in range(0, 2):
+            self.client.get(reverse('home'))
+            User.objects.create(username=i)
+        stdout, stderr = sys.stdout, sys.stderr
+        sys.stdout = c1 = StringIO()
+        sys.stderr = c2 = StringIO()
+        call_command('count_objects')
+        self.assertTrue ('django_hello_world.hello.models.WebRequest\t2' in c1.getvalue())
+        self.assertTrue ('error:django_hello_world.hello.models.WebRequest\t2' in c2.getvalue())
+        self.assertTrue ('django.contrib.auth.models.User\t3' in c1.getvalue())
+        self.assertTrue ('error:django.contrib.auth.models.User\t3' in c2.getvalue())
+        sys.stdout, sys.stderr = stdout, stderr
