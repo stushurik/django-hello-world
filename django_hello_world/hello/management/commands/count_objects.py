@@ -1,4 +1,4 @@
-from sys import stderr
+from sys import stderr, stdout
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import BaseCommand
@@ -13,11 +13,10 @@ class Command(BaseCommand):
         for ct in ContentType.objects.all():
             try:
                 m = ct.model_class()
-                message = (m.__module__,
-                           m.__name__,
+                message = (m.__name__,
                            m._default_manager.count()
                            )
-                print "%s.%s\t%d" % message
-                print >> stderr, "error:%s.%s\t%d" % message
+                stdout.writelines("%s\t%d\n" % message)
+                stderr.writelines("error:%s\t%d\n" % message)
             except:
                 pass
