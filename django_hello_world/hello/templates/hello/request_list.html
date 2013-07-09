@@ -1,9 +1,11 @@
+{% load static %}
+
 <table class="table table-bordered" id="list">
     <thead>
         <tr>
             <th> # </th>
-            <th>Priority <img src="{{ settings.STATIC_IMG }}sort_icon.gif" class="sort {% if order_priority %}{{ order_priority }}{% else%}asc{% endif %}" id="priority"></th>
-            <th>Time <img src="{{ settings.STATIC_IMG }}sort_icon.gif" class="sort {% if order_time %}{{ order_time }}{% else%}asc{% endif %}" id="time"></th>
+            <th>Priority <img src="{% static "img/sort_icon.gif" %}" class="sort {% if order_priority %}{{ order_priority }}{% else%}asc{% endif %}" id="priority"></th>
+            <th>Time <img src="{% static "img/sort_icon.gif" %}" class="sort {% if order_time %}{{ order_time }}{% else%}asc{% endif %}" id="time"></th>
             <th>Host</th>
             <th>Path</th>
             <th>Method</th>
