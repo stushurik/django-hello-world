@@ -16,7 +16,8 @@ class WebRequestMiddleware(object):
         remote_addr_fwd = None
 
         if 'HTTP_X_FORWARDED_FOR' in meta:
-            remote_addr_fwd = meta['HTTP_X_FORWARDED_FOR'].split(",")[0].strip()
+            remote_addr_fwd = \
+                meta['HTTP_X_FORWARDED_FOR'].split(",")[0].strip()
             if remote_addr_fwd == meta['HTTP_X_FORWARDED_FOR']:
                 meta.pop('HTTP_X_FORWARDED_FOR')
 

@@ -6,7 +6,7 @@ from django.db import models
 
 
 def make_upload_path(instance, filename):
-    return u"img/%s" %  filename
+    return u"img/%s" % filename
 
 
 class UserProfile(models.Model):
@@ -17,7 +17,8 @@ class UserProfile(models.Model):
     jabber = models.CharField(blank=True, max_length=255)
     skype = models.CharField(blank=True, max_length=255)
     other = models.TextField(blank=True)
-    avatar = models.ImageField(upload_to=make_upload_path, null=True, blank=True)
+    avatar = models.ImageField(
+        upload_to=make_upload_path, null=True, blank=True)
 
     def __unicode__(self):
         return self.user.email

@@ -1,18 +1,14 @@
 import json
 import os
-import traceback
-import PIL
 
 from django.contrib.auth import authenticate, login, get_user, logout
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView, ListView, View
-import sys
-from django_hello_world import settings
 
 from django_hello_world.hello.forms import UserForm, UserProfileForm
-from django_hello_world.hello.models import WebRequest, UserProfile
+from django_hello_world.hello.models import WebRequest
 
 
 class DetailFormView(TemplateView):
@@ -63,7 +59,11 @@ class RequestListView(ListView):
             end = int(request.POST.get('end', 0))
         except:
             return HttpResponse("Please enter integer value of priority!")
-        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by('priority')
+
+        self.queryset = \
+            WebRequest.objects.filter(
+                priority__range=(start, end)).order_by('priority')
+
         self.object_list = self.get_queryset()
         context = self.get_context_data(object_list=self.object_list)
         return self.render_to_response(context)
@@ -93,14 +93,20 @@ class ChangePriority(View):
                     request_record.priority = value
                     request_record.save()
                     response_data['success'] = True
-                    response_data['message'] = "Priority was successful changed!"
+
+                    response_data['message'] = \
+                        "Priority was successful changed!"
+
                 except:
                     response_data['message'] = "Error: with DB operations!"
             except:
-                response_data['message'] = "Error: priority value is not integer!"
+
+                response_data['message'] = \
+                    "Error: priority value is not integer!"
         else:
             response_data['message'] = "Error: there is no request id!"
-        return HttpResponse(json.dumps(response_data), mimetype="application/json")
+        return HttpResponse(
+            json.dumps(response_data), mimetype="application/json")
 
 
 class Sort(ListView):
@@ -112,9 +118,15 @@ class Sort(ListView):
         try:
             start = int(request.POST.get('start', 0))
             end = int(request.POST.get('end', 0))
+            rng = (start, end)
         except:
             return HttpResponse("Please enter integer value of priority!")
-        self.queryset = WebRequest.objects.filter(priority__range=(start, end)).order_by("-" + field if sort_order == 'asc' else field)
+
+        condition = "-" + field if sort_order == 'asc' else field
+
+        self.queryset = \
+            WebRequest.objects.filter(priority__range=rng).order_by(condition)
+
         self.object_list = self.get_queryset()
         context = self.get_context_data(object_list=self.object_list)
         context['order_' + field] = "desc" if sort_order == 'asc' else 'asc'
@@ -161,15 +173,19 @@ class SaveProfile(View):
                 try:
                     os.remove(user.userprofile.avatar.path)
                     user.userprofile.avatar.name = ''
-                except :
+                except:
                     pass
 
-            user_profile_form = UserProfileForm(request.POST, request.FILES, instance=user.userprofile)
+            user_profile_form = \
+                UserProfileForm(
+                    request.POST, request.FILES, instance=user.userprofile)
 
             if user_profile_form.is_valid() and user_form.is_valid():
                 for instance in (user_form, user_profile_form):
                     save(instance)
-        except :
+        except:
             response_data['success'] = False
             response_data['message'] = "Error while saving data!"
-        return HttpResponse(json.dumps(response_data), mimetype="application/json")
+
+        return HttpResponse(
+            json.dumps(response_data), mimetype="application/json")

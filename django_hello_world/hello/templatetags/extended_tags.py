@@ -24,11 +24,9 @@ def edit_link(obj):
     obj_type = ContentType.objects.get_for_model(obj)
     app_label = obj_type.app_label
     model_name = obj_type.model
-    url = 'admin:%s_%s_change' %(app_label, model_name)
+    url = 'admin:%s_%s_change' % (app_label, model_name)
     try:
         change_url = urlresolvers.reverse(url, args=(obj_id, ))
     except NoReverseMatch:
         pass
     return change_url
-
-

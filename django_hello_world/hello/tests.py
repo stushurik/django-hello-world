@@ -57,7 +57,8 @@ class HttpTest(TestCase):
 
         self.assertContains(response, 'Contacts')
         self.assertContains(response, admin.userprofile.contacts)
-        self.assertEqual("Chernigiv, Dotsenko str. 12 app. 17", admin.userprofile.contacts)
+        self.assertEqual(
+            "Chernigiv, Dotsenko str. 12 app. 17", admin.userprofile.contacts)
 
         self.assertContains(response, 'Jabber')
         self.assertContains(response, admin.userprofile.jabber)
@@ -74,10 +75,17 @@ class HttpTest(TestCase):
     def test_requests(self):
         response = self.client.get(reverse('requests'))
         self.assertEqual(response.status_code, 200)
-        response = self.client.post(reverse('requests_list'), {'start': "0", 'end': "0"})
-        self.assertTemplateUsed(response, 'hello/request_list.html')
-        response = self.client.post(reverse('requests_list'), {'start': "string", 'end': "string"})
-        self.assertContains(response, 'Please enter integer value of priority!')
+        response = self.client.post(
+            reverse('requests_list'), {'start': "0", 'end': "0"})
+
+        self.assertTemplateUsed(
+            response, 'hello/request_list.html')
+
+        response = self.client.post(
+            reverse('requests_list'), {'start': "string", 'end': "string"})
+
+        self.assertContains(
+            response, 'Please enter integer value of priority!')
 
         response_data_v1 = {'success': True,
                             'message': "Priority was successful changed!"
@@ -91,32 +99,45 @@ class HttpTest(TestCase):
         response_data_v4 = {'success': False,
                             'message': "Error: there is no request id!"
                             }
-        response = self.client.post(reverse('change_priority'), {'id': "1", 'value': "100"})
+        response = self.client.post(
+            reverse('change_priority'), {'id': "1", 'value': "100"})
+
         self.assertContains(response, json.dumps(response_data_v1))
-        response = self.client.post(reverse('change_priority'), {'id': "-1", 'value': "100"})
+
+        response = self.client.post(
+            reverse('change_priority'), {'id': "-1", 'value': "100"})
+
         self.assertContains(response, json.dumps(response_data_v2))
-        response = self.client.post(reverse('change_priority'), {'id': "1", 'value': "string"})
+
+        response = self.client.post(
+            reverse('change_priority'), {'id': "1", 'value': "string"})
+
         self.assertContains(response, json.dumps(response_data_v3))
-        response = self.client.post(reverse('change_priority'), {'value': "100"})
+        response = self.client.post(
+
+            reverse('change_priority'), {'value': "100"})
         self.assertContains(response, json.dumps(response_data_v4))
 
-        response = self.client.post(reverse('sort'),
-                                    {'id': "time",
-                                     'type': "asc",
-                                     'start': '0',
-                                     'end': '0'
-                                     }
-                                    )
+        response = self.client.post(
+            reverse('sort'),
+            {'id': "time", 'type': "asc", 'start': '0', 'end': '0'})
 
-        request_list = WebRequest.objects.filter(priority__range=(0, 0)).order_by("-time")
+        request_list = \
+            WebRequest.objects.filter(priority__range=(0, 0)).order_by("-time")
+
         for request in request_list:
             self.assertContains(response, request.time)
 
     def test_login(self):
-        response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "2"})
+        response = self.client.post(
+            reverse('confirm'), {'username': "admin", 'pass': "2"})
+
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('login'))
-        response = self.client.post(reverse('confirm'), {'username': "admin", 'pass': "admin"})
+
+        response = self.client.post(
+            reverse('confirm'), {'username': "admin", 'pass': "admin"})
+
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('home'))
         self.client.logout()
@@ -283,37 +304,39 @@ class ManagementCommandTestCase(TestCase):
 
 class SignalProcessorTestCase(TestCase):
     def test_signal(self):
-        number_of_operation = len(ModelsOperation.objects.filter(operation='Creation',
-                                                                 model_class='User'
-                                                                 )
-                                  )
+
+        number_of_operation = \
+            len(ModelsOperation.objects.filter(
+                operation='Creation', model_class='User'))
+
         user = User.objects.create(username='test_signal')
-        self.assertEqual(number_of_operation + 1,
-                         len(ModelsOperation.objects.filter(operation='Creation',
-                                                            model_class='User'
-                                                            )
-                             )
-                         )
-        number_of_operation = len(ModelsOperation.objects.filter(operation='Editing',
-                                                                 model_class='User'
-                                                                 )
-                                  )
+
+        self.assertEqual(
+            number_of_operation + 1,
+            len(ModelsOperation.objects.filter(
+                operation='Creation', model_class='User')
+                ))
+
+        number_of_operation = \
+            len(ModelsOperation.objects.filter(
+                operation='Editing', model_class='User'))
+
         user.username = 'test_signal_edit'
         user.save()
-        self.assertEqual(number_of_operation + 1,
-                         len(ModelsOperation.objects.filter(operation='Editing',
-                                                            model_class='User'
-                                                            )
-                             )
-                         )
-        number_of_operation = len(ModelsOperation.objects.filter(operation='Deletion',
-                                                                 model_class='User'
-                                                                 )
-                                  )
+
+        self.assertEqual(
+            number_of_operation + 1,
+            len(ModelsOperation.objects.filter(
+                operation='Editing', model_class='User')
+                ))
+
+        number_of_operation = \
+            len(ModelsOperation.objects.filter(
+                operation='Deletion', model_class='User'))
+
         user.delete()
-        self.assertEqual(number_of_operation + 1,
-                         len(ModelsOperation.objects.filter(operation='Deletion',
-                                                            model_class='User'
-                                                            )
-                             )
-                         )
+        self.assertEqual(
+            number_of_operation + 1,
+            len(ModelsOperation.objects.filter(
+                operation='Deletion', model_class='User')
+                ))
