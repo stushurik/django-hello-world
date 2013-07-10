@@ -27,7 +27,7 @@ class SimpleTest(TestCase):
 
 
 class HttpTest(TestCase):
-    fixtures = ['initial_data.json']
+    fixtures = ['hello_fixture.json']
 
     def test_home(self):
         admin = User.objects.get(email='stu.shurik@gmail.com')
@@ -113,9 +113,10 @@ class HttpTest(TestCase):
             reverse('change_priority'), {'id': "1", 'value': "string"})
 
         self.assertContains(response, json.dumps(response_data_v3))
-        response = self.client.post(
 
+        response = self.client.post(
             reverse('change_priority'), {'value': "100"})
+
         self.assertContains(response, json.dumps(response_data_v4))
 
         response = self.client.post(
@@ -175,9 +176,11 @@ class HttpTest(TestCase):
         self.assertContains(response, "-")
 
     def test_data_edit_view(self):
+
         response_data = {'success': False,
                          'message': "Error while saving data!"
                          }
+
         response = self.client.post(reverse('save_profile'), {'foo': 'bar'})
         self.assertContains(response, json.dumps(response_data))
         admin = User.objects.get(username='admin')
@@ -192,25 +195,23 @@ class HttpTest(TestCase):
                           'skype': 'test',
                           'jabber': 'test',
                           'contacts': 'test',
-                          }
-                         )
+                          })
 
-        self.assertEqual(1, len(User.objects.filter(first_name='Test',
-                                                    last_name='Test',
-                                                    email='test@test.com'
-                                                    )
-                                )
-                         )
-        test_user = User.objects.get(first_name='Test',
-                                     last_name='Test',
-                                     email='test@test.com'
-                                     )
+        self.assertEqual(
+            1, len(User.objects.filter(
+                first_name='Test', last_name='Test', email='test@test.com')))
+
+        test_user = \
+            User.objects.get(
+                first_name='Test', last_name='Test', email='test@test.com')
+
         self.assertEqual(admin.id, test_user.id)
 
 
 class WebRequestMiddlewareTest(TestCase):
 
     def test_saving_one_request(self):
+
         self.client.get(reverse('home'),
                         PATH=reverse('home'),
                         HTTP_USER_AGENT='Mozilla/5.0'
@@ -247,22 +248,19 @@ class WebRequestMiddlewareTest(TestCase):
 
     def test_pass_params_get(self):
         params = {"test1": "str"}
-        self.client.get(reverse('requests'),
-                        params,
-                        )
+        self.client.get(reverse('requests'), params,)
         request = WebRequest.objects.latest('time')
         self.assertEqual(request.path, reverse('requests'))
         self.assertEqual(request.get, json.dumps(params))
 
     def test_pass_params_post(self):
         params = {"test1": "str"}
-        self.client.post('/admin/',
-                         params,
+        self.client.post(reverse('admin:index'), params,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest'
                          )
 
         request = WebRequest.objects.latest('time')
-        self.assertEqual(request.path, '/admin/')
+        self.assertEqual(request.path, reverse('admin:index'))
         self.assertEqual(request.method, 'POST')
         self.assertEqual(request.is_ajax, True)
         self.assertEqual(request.post, json.dumps(params))
