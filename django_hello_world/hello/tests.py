@@ -75,6 +75,7 @@ class HttpTest(TestCase):
     def test_requests(self):
         response = self.client.get(reverse('requests'))
         self.assertEqual(response.status_code, 200)
+
         response = self.client.post(
             reverse('requests_list'), {'start': "0", 'end': "0"})
 
